@@ -1,11 +1,11 @@
 package com.boardgame;
 
-import com.boardgame.login.Login;
+import com.boardgame.page.Window;
 
 public class BoardGameLendDrive {
 	
 	public static void main(String[] args) {
-		Login window = new Login();
+		Window window = new Window();
 	}
 
 }
