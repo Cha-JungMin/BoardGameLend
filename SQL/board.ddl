@@ -1,7 +1,7 @@
--- »ý¼ºÀÚ Oracle SQL Developer Data Modeler 23.1.0.087.0806
---   À§Ä¡:        2024-05-01 14:31:04 KST
---   »çÀÌÆ®:      Oracle Database 11g
---   À¯Çü:      Oracle Database 11g
+-- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Oracle SQL Developer Data Modeler 23.1.0.087.0806
+--   ï¿½ï¿½Ä¡:        2024-05-03 15:51:34 KST
+--   ï¿½ï¿½ï¿½ï¿½Æ®:      Oracle Database 11g
+--   ï¿½ï¿½ï¿½ï¿½:      Oracle Database 11g
 
 
 
@@ -10,35 +10,36 @@
 -- predefined type, no DDL - XMLTYPE
 
 CREATE TABLE board_game (
-    board_id    NUMBER NOT NULL,
-    game_title  VARCHAR2(50 CHAR) NOT NULL,
-    description VARCHAR2(1000 CHAR),
-    min_people  NUMBER(2) NOT NULL,
-    max_people  NUMBER(2) NOT NULL,
-    play_time   NUMBER(5) NOT NULL,
-    rental_fee  NUMBER(10) NOT NULL
+    board_id      NUMBER NOT NULL,
+    game_title    VARCHAR2(50 CHAR) NOT NULL,
+    description   VARCHAR2(1000 CHAR),
+    min_people    NUMBER(2) NOT NULL,
+    max_people    NUMBER(2) NOT NULL,
+    play_time     NUMBER(5) NOT NULL,
+    rental_fee    NUMBER(10) NOT NULL,
+    max_play_time NUMBER(5)
 );
 
 COMMENT ON COLUMN board_game.board_id IS
-    'º¸µå°ÔÀÓid';
+    'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½id';
 
 COMMENT ON COLUMN board_game.game_title IS
-    '°ÔÀÓ ÀÌ¸§';
+    'ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½';
 
 COMMENT ON COLUMN board_game.description IS
-    '°ÔÀÓ ¼Ò°³';
+    'ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½';
 
 COMMENT ON COLUMN board_game.min_people IS
-    'ÃÖ¼Ò ÀÎ¿ø';
+    'ï¿½Ö¼ï¿½ ï¿½Î¿ï¿½';
 
 COMMENT ON COLUMN board_game.max_people IS
-    'ÃÖ´ë ÀÎ¿ø';
+    'ï¿½Ö´ï¿½ ï¿½Î¿ï¿½';
 
 COMMENT ON COLUMN board_game.play_time IS
-    '¿¹»ó ÇÃ·¹ÀÌ Å¸ÀÓ(ºÐ)';
+    'ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½(ï¿½ï¿½)';
 
 COMMENT ON COLUMN board_game.rental_fee IS
-    '´ë¿©·á (ÀÏ)';
+    'ï¿½ë¿©ï¿½ï¿½ (ï¿½ï¿½)';
 
 ALTER TABLE board_game ADD CONSTRAINT board_game_pk PRIMARY KEY ( board_id );
 
@@ -48,7 +49,7 @@ CREATE TABLE board_game_copy (
 );
 
 COMMENT ON COLUMN board_game_copy.copy_id IS
-    'Àç°íid';
+    'ï¿½ï¿½ï¿½id';
 
 ALTER TABLE board_game_copy ADD CONSTRAINT board_game_copy_pk PRIMARY KEY ( copy_id,
                                                                             board_game_board_id );
@@ -60,7 +61,7 @@ CREATE TABLE board_genre (
 );
 
 COMMENT ON COLUMN board_genre.board_genre_id IS
-    'º¸µå°ÔÀÓ Àå¸£';
+    'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½å¸£';
 
 ALTER TABLE board_genre ADD CONSTRAINT board_genre_pk PRIMARY KEY ( board_genre_id );
 
@@ -83,52 +84,47 @@ CREATE TABLE member (
 );
 
 COMMENT ON COLUMN member.member_id IS
-    'È¸¿ø¹øÈ£';
+    'È¸ï¿½ï¿½ï¿½ï¿½È£';
 
 COMMENT ON COLUMN member.id IS
-    '¾ÆÀÌµð';
+    'ï¿½ï¿½ï¿½Ìµï¿½';
 
 COMMENT ON COLUMN member.password IS
-    'ºñ¹Ð¹øÈ£';
+    'ï¿½ï¿½Ð¹ï¿½È£';
 
 COMMENT ON COLUMN member.name IS
-    'ÀÌ¸§';
+    'ï¿½Ì¸ï¿½';
 
 COMMENT ON COLUMN member.phone_number IS
-    'ÀüÈ­¹øÈ£';
+    'ï¿½ï¿½È­ï¿½ï¿½È£';
 
 COMMENT ON COLUMN member.birth_date IS
-    '»ý³â¿ùÀÏ';
+    'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½';
 
 COMMENT ON COLUMN member.reg_date IS
-    '°¡ÀÔÀÏÀÚ';
+    'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½';
 
 ALTER TABLE member ADD CONSTRAINT member_pk PRIMARY KEY ( member_id );
 
-CREATE TABLE rental (
-    rental_id        NUMBER NOT NULL,
-    member_member_id NUMBER NOT NULL
-);
-
-ALTER TABLE rental ADD CONSTRAINT rental_pk PRIMARY KEY ( rental_id );
-
 CREATE TABLE rental_detail (
-    rantal_detail_id        NUMBER NOT NULL,
-    start_date              DATE NOT NULL,
-    end_date                DATE NOT NULL,
-    board_game_copy_copy_id NUMBER NOT NULL,
-    rental_rental_id        NUMBER NOT NULL,
-    "comment"               VARCHAR2(1000 CHAR),
-    grade                   NUMBER(1) NOT NULL,
-    statement               VARCHAR2(10 CHAR) NOT NULL,
-    waiting                 NUMBER(2),
-    board_game_copy_id      NUMBER NOT NULL
+    rantal_detail_id                   NUMBER NOT NULL,
+    start_date                         DATE NOT NULL,
+    end_date                           DATE NOT NULL,
+    board_game_copy_copy_id            NUMBER NOT NULL,
+    "comment"                          VARCHAR2(1000 CHAR),
+    grade                              NUMBER(1) NOT NULL,
+    statement                          VARCHAR2(10 CHAR) NOT NULL,
+    waiting                            NUMBER(2), 
+--  ERROR: Column name length exceeds maximum allowed length(30) 
+    board_game_copy_boardgame_board_id NUMBER NOT NULL,
+    member_member_id                   NUMBER NOT NULL
 );
 
-ALTER TABLE rental_detail ADD CONSTRAINT rental_detail_pk PRIMARY KEY ( rantal_detail_id );
+ALTER TABLE rental_detail ADD CONSTRAINT rental_detail_pk PRIMARY KEY ( rantal_detail_id,
+                                                                        board_game_copy_boardgame_board_id );
 
 ALTER TABLE board_game_copy
-    ADD CONSTRAINT board_copy_fk FOREIGN KEY ( board_game_board_id )
+    ADD CONSTRAINT board_game_copy_board_game_fk FOREIGN KEY ( board_game_board_id )
         REFERENCES board_game ( board_id );
 
 ALTER TABLE board_genre
@@ -139,27 +135,24 @@ ALTER TABLE board_genre
     ADD CONSTRAINT board_genre_genre_fk FOREIGN KEY ( genre_genre_id )
         REFERENCES genre ( genre_id );
 
+--  ERROR: FK name length exceeds maximum allowed length(30) 
 ALTER TABLE rental_detail
-    ADD CONSTRAINT renta_game_copy_fk FOREIGN KEY ( board_game_copy_copy_id,
-                                                    board_game_copy_id )
+    ADD CONSTRAINT rental_detail_board_game_copy_fk FOREIGN KEY ( board_game_copy_copy_id,
+                                                                  board_game_copy_boardgame_board_id )
         REFERENCES board_game_copy ( copy_id,
                                      board_game_board_id );
 
 ALTER TABLE rental_detail
-    ADD CONSTRAINT rental_detail_rental_fk FOREIGN KEY ( rental_rental_id )
-        REFERENCES rental ( rental_id );
-
-ALTER TABLE rental
-    ADD CONSTRAINT rental_member_fk FOREIGN KEY ( member_member_id )
+    ADD CONSTRAINT rental_detail_member_fk FOREIGN KEY ( member_member_id )
         REFERENCES member ( member_id );
 
 
 
--- Oracle SQL Developer Data Modeler ¿ä¾à º¸°í¼­: 
+-- Oracle SQL Developer Data Modeler ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: 
 -- 
--- CREATE TABLE                             7
+-- CREATE TABLE                             6
 -- CREATE INDEX                             0
--- ALTER TABLE                             13
+-- ALTER TABLE                             11
 -- CREATE VIEW                              0
 -- ALTER VIEW                               0
 -- CREATE PACKAGE                           0
@@ -195,5 +188,5 @@ ALTER TABLE rental
 -- ORDS ENABLE SCHEMA                       0
 -- ORDS ENABLE OBJECT                       0
 -- 
--- ERRORS                                   0
+-- ERRORS                                   2
 -- WARNINGS                                 0
