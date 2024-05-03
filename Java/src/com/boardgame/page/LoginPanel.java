@@ -5,34 +5,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-public class Login extends JPanel {
+public class LoginPanel extends JPanel {
 
-	private Container		contentPane;
 	private JLabel 			labelId, labelPwd;
 	private JTextField 		txtId;
 	private JPasswordField 	txtPwd;
 	private JButton			btnLogin, btnJoin;
 	
-	public Login() {
-		initialization();
-	}
-	
-	private void initialization() {
+	public LoginPanel() {
 		labelId = new JLabel("ID:");
 		labelPwd = new JLabel("PWD:");
 		txtId = new JTextField();
 		txtPwd = new JPasswordField();
 		btnLogin = new JButton("Login");
 		btnJoin = new JButton("Sign up");
+		initialization();
+	}
+	
+	private void initialization() {
+		setLayout(null);
 		
-        setSize(450, 300);
-        
         labelId.setBounds(130, 93, 50, 15);
         labelPwd.setBounds(130, 123, 50, 15);
         txtId.setBounds(190, 93, 125, 15);
@@ -61,14 +58,13 @@ public class Login extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Sign up click");
-				Join join = new Join();
-				getParent().remove(Login.this);
-//				add(join);
-//				revalidate();
-//				repaint();
-//                pane.add(signUpPanel);
-//                pane.revalidate();
-//                pane.repaint();
+				
+				Container panel = getParent();
+				JoinPanel join = new JoinPanel();
+				panel.remove(LoginPanel.this);
+				panel.add(join);
+				panel.revalidate();
+				panel.repaint();
 			}
 		});
 

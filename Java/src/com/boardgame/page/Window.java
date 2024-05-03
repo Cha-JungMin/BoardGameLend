@@ -6,21 +6,23 @@ import javax.swing.JFrame;
 
 public class Window extends JFrame {
 	
-	private Container		container;
+	private Container container = getContentPane();
 
 	public Window() {
-		setTitle("zzzz"); // 프레임 제목 설정
+		initialization();
+	}
+	
+	private void initialization() {
+		setTitle("BoardGameLend Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        setSize(450, 300); // 프레임 크기 설정
-
-        Container contentPane = getContentPane(); //프레임에서 컨텐트팬 받아오기
-        contentPane.setLayout(null);
+        setSize(450, 300);
         
-        Login pane = new Login();
+        LoginPanel loginPanel = new LoginPanel();
         
-        contentPane.add(pane);
+        container.add(loginPanel);
         
-        setVisible(true); //화면에 프레임 출력
+        setVisible(true);
 	}
 	
 }
+
