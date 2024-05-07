@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.boardgame.db.SQLCall;
+
 public class LoginPanel extends JPanel {
 
 	private JLabel 			labelId, labelPwd;
@@ -51,6 +53,15 @@ public class LoginPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("login click");
+				System.out.println(txtId.getText());
+				System.out.println(txtPwd.getPassword());
+				SQLCall test = new SQLCall("{ call pkg_member.get_member_info(" +
+						txtId.getText() + ", " +
+						txtPwd.getPassword() + ", "
+				+ ") }");
+				test.setCallback(set -> {
+					System.out.println(set);
+				});
 			}
 		});
         
