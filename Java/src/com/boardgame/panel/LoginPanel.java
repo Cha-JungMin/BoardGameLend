@@ -3,8 +3,10 @@ package com.boardgame.panel;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.ResultSet;
+import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.LinkedList;
 
 import javax.swing.JButton;
@@ -14,11 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.boardgame.db.DBConnection;
 import com.boardgame.db.SQLCall;
 import com.boardgame.window.LoginWindow;
 import com.boardgame.window.RentalWindow;
-
-import oracle.jdbc.internal.OracleTypes;
 
 public class LoginPanel extends JPanel {
 
@@ -63,31 +64,39 @@ public class LoginPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SQLCall sql = new SQLCall(
-						"{ call pkg_member.get_member_info(?, ?, ?) }",
+						"{ call pkg_member.login_member(?, ?, ?) }",
 						callableStatement -> {
 							try {
 								callableStatement.setString(1, txtId.getText());
 								callableStatement.setString(2, new String(txtPwd.getPassword()));
-								callableStatement.registerOutParameter(3, OracleTypes.CURSOR);
+								callableStatement.registerOutParameter(3, java.sql.Types.INTEGER);
 								callableStatement.execute();
-								ResultSet resultSet = (ResultSet) callableStatement.getObject(3);
-								boolean isLoginInfo = false;
-								while (resultSet.next()) {
-									isLoginInfo = true;
-//									LinkedList<> 이걸로 만들기
-									System.out.println(resultSet.getString(1));
-									System.out.println(resultSet.getString(2));
-									System.out.println(resultSet.getString(3));
-									System.out.println(resultSet.getString(4));
-									System.out.println(resultSet.getString(5));
-									System.out.println(resultSet.getString(6));
-									System.out.println(resultSet.getString(7));
-									System.out.println(resultSet.getString(8));
-								}
-								if (isLoginInfo) {
+								callableStatement.getInt(3);
+								if (callableStatement.getInt(3) == -1) {
+									String title = "BoardGameRental Login Alert";
+							        String message = "로그인에 실패했습니다. 다시 시도해 주세요.";
+							        int messageType = JOptionPane.INFORMATION_MESSAGE;
+							        JOptionPane.showMessageDialog(null, message, title, messageType);
+								} else {
 									// 로그인 성공으로 페널 이동
 									frame.dispose();
 									RentalWindow window = new RentalWindow();
+									
+									SQLCall _sql = new SQLCall(
+											"{? = call pkg_member.get_user_grade(?) }",
+											_callableStatement -> {
+												try {
+													System.out.println(callableStatement.getInt(3));
+													_callableStatement.registerOutParameter(1, Types.INTEGER);
+													_callableStatement.setInt(2, callableStatement.getInt(3));
+													_callableStatement.execute();
+													System.out.println(_callableStatement.getInt(1));
+												} catch (SQLException _err) {
+													System.err.format("SQL State: %s\n%s", _err.getSQLState(), _err.getMessage());
+													_err.printStackTrace();
+												}
+											}
+											);
 //									if (resultSet.getInt(8) == 1) {
 //										//관리자
 //									}
@@ -95,12 +104,6 @@ public class LoginPanel extends JPanel {
 //										//유저
 //										frame.dispose();
 //									}
-								}
-								if (!isLoginInfo) {
-									String title = "BoardGameRental Login Alert";
-							        String message = "로그인에 실패했습니다. 다시 시도해 주세요.";
-							        int messageType = JOptionPane.INFORMATION_MESSAGE;
-							        JOptionPane.showMessageDialog(null, message, title, messageType);
 								}
 							} catch (SQLException err) {
 								System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());

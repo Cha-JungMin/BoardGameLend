@@ -1,8 +1,6 @@
 package com.boardgame.panel;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import com.boardgame.menubar.UserMenuBar;
