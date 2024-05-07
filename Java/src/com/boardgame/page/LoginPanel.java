@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.boardgame.db.SQLCall;
+
 public class LoginPanel extends JPanel {
 
 	private JLabel 			labelId, labelPwd;
@@ -32,10 +34,12 @@ public class LoginPanel extends JPanel {
 		
         labelId.setBounds(130, 93, 50, 15);
         labelPwd.setBounds(130, 123, 50, 15);
-        txtId.setBounds(190, 93, 125, 15);
-        txtPwd.setBounds(190, 123, 125, 15);
-        btnLogin.setBounds(130, 153, 80, 30);
-        btnJoin.setBounds(235, 153, 80, 30);
+//        txtId.setBounds(190, 93, 125, 15);
+//        txtPwd.setBounds(190, 123, 125, 15);
+//        btnLogin.setBounds(130, 153, 80, 30);
+//        btnJoin.setBounds(235, 153, 80, 30);
+        btnLogin.setBounds(30, 90, 80, 30);
+        btnJoin.setBounds(120, 90, 80, 30);
         
         txtId.setColumns(0);
         txtPwd.setColumns(0);
@@ -51,6 +55,12 @@ public class LoginPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("login click");
+				System.out.println(txtId.getText());
+				System.out.println(txtPwd.getPassword());
+				SQLCall test = new SQLCall("{ call pkg_member.get_member_info(" +
+						txtId.getText() + ", " +
+						txtPwd.getPassword() + ", "
+				+ ") }");
 			}
 		});
         
