@@ -34,12 +34,10 @@ public class LoginPanel extends JPanel {
 		
         labelId.setBounds(130, 93, 50, 15);
         labelPwd.setBounds(130, 123, 50, 15);
-//        txtId.setBounds(190, 93, 125, 15);
-//        txtPwd.setBounds(190, 123, 125, 15);
-//        btnLogin.setBounds(130, 153, 80, 30);
-//        btnJoin.setBounds(235, 153, 80, 30);
-        btnLogin.setBounds(30, 90, 80, 30);
-        btnJoin.setBounds(120, 90, 80, 30);
+        txtId.setBounds(190, 93, 125, 15);
+        txtPwd.setBounds(190, 123, 125, 15);
+        btnLogin.setBounds(130, 153, 80, 30);
+        btnJoin.setBounds(235, 153, 80, 30);
         
         txtId.setColumns(0);
         txtPwd.setColumns(0);
@@ -61,6 +59,9 @@ public class LoginPanel extends JPanel {
 						txtId.getText() + ", " +
 						txtPwd.getPassword() + ", "
 				+ ") }");
+				test.setCallback(set -> {
+					System.out.println(set);
+				});
 			}
 		});
         
