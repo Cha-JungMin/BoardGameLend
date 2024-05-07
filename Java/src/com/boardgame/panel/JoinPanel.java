@@ -1,4 +1,4 @@
-package com.boardgame.page;
+package com.boardgame.panel;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -13,6 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.boardgame.db.SQLCall;
+import com.boardgame.window.LoginWindow;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -20,6 +21,7 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 public class JoinPanel extends JPanel {
 	
+	private LoginWindow			frame;
 	private JLabel 			labelId, labelPwd, labelName, labelBirth, labelPhone;
 	private JTextField		txtID, txtName, txtPhone;
 	private JPasswordField 	txtPwd;
@@ -31,8 +33,9 @@ public class JoinPanel extends JPanel {
 	
 	
 	
-	public JoinPanel() {
+	public JoinPanel(LoginWindow _frame) {
 
+		frame = _frame;
         labelId = new JLabel("ID:");
 		labelPwd = new JLabel("PWD:");
 		labelName = new JLabel("Name:");
@@ -52,6 +55,7 @@ public class JoinPanel extends JPanel {
 		initialization();
         
     }
+	
 	
 	private void initialization() {
 		setLayout(null);
@@ -103,14 +107,14 @@ public class JoinPanel extends JPanel {
 								callableStatement.setString(5, model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + model.getDay());
 								callableStatement.execute();
 								if (callableStatement.getInt(6) == 1) {
-									String title = "BoardGameLend Login Alert";
+									String title = "BoardGameRental Login Alert";
 									String message = "회원 가입이 되었습니다. 로그인 화면으로 넘어갑니다.";
 							        int messageType = JOptionPane.INFORMATION_MESSAGE;
 							        JOptionPane.showMessageDialog(null, message, title, messageType);
 							        btnBack.doClick();
 								}
 								if (callableStatement.getInt(6) == 0) {
-									String title = "BoardGameLend Login Alert";
+									String title = "BoardGameRental Login Alert";
 							        String message = "회원 가입에 실패 했습니다. 다시 시도해 주세요.";
 							        int messageType = JOptionPane.INFORMATION_MESSAGE;
 							        JOptionPane.showMessageDialog(null, message, title, messageType);
@@ -132,7 +136,7 @@ public class JoinPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Container panel = getParent();
-				LoginPanel login = new LoginPanel();
+				LoginPanel login = new LoginPanel(frame);
 				panel.remove(JoinPanel.this);
 				panel.add(login);
 				panel.revalidate();
