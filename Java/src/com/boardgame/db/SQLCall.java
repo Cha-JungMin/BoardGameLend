@@ -17,22 +17,14 @@ public class SQLCall {
 		this.callSQL = call;
 	}
 	
-	public void setCallback(ResultSetCallback callback) {
+	public SQLCall(String call, CalStatementSetCallback callback) {
 		try {
+			this.callSQL = call;
 			this.con = DBConnection.getConnection();
 			this.callableStatement = this.con.prepareCall(this.callSQL);
-			this.callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
-			
-			try {
-				this.callableStatement.execute();
-				ResultSet resultSet = (ResultSet) this.callableStatement.getObject(1);
-				callback.processResultSet(resultSet);
-			} catch (SQLException e) {
-				System.out.println("프로시저에서 에러 발생!");
-				System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
-			}
-			
+			callback.processCalStatementSet(this.callableStatement);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
