@@ -13,7 +13,7 @@ public class App extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private static Connection con;
-	private static Panel1 panel1;
+	private static BoardStatus boardStatus;
 	/**
 	 * Launch the application.
 	 */
@@ -27,8 +27,8 @@ public class App extends JFrame {
 					Connection c = com.boardgame.db.DBConnection.getConnection();
 					// DB 연결이 성공했을 때 
 					con = c;
-					panel1.con =c;
-					panel1.loadBoardGame();
+					boardStatus.con =c;
+					boardStatus.loadBoardGame();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -55,14 +55,14 @@ public class App extends JFrame {
 	public App() {
 		this.setTitle("보드게임 정보");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 800, 600);
+		setBounds(100, 100, 800, 508);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
-		panel1 = new Panel1();
-		panel1.setLocation(0, 0);
-		panel1.setSize(800, 600);
-		contentPane.add(panel1);
+		boardStatus = new BoardStatus();
+		boardStatus.setLocation(0, 0);
+		boardStatus.setSize(800, 476);
+		contentPane.add(boardStatus);
 		
 		
 		setContentPane(contentPane);
