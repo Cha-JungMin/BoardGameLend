@@ -86,7 +86,7 @@ public class BoardPack {
     public static ResultSet SearchBoardGame(Connection con, String title, String genre, 
     		int min_people, int max_people, int min_rental_fee, int max_rental_fee) {
     	ResultSet resultSet = null;
-    	String procedure = "{ call board_pack.search_boardgame(?, ?, ?, ?, ?, ?, ?)}";
+    	String procedure = "{ call board_pack.search_boardgames(?, ?, ?, ?, ?, ?, ?)}";
     	
     	 try {
              CallableStatement callableStatement = con.prepareCall(procedure);

@@ -158,7 +158,7 @@ public class BoardStatus extends JPanel {
         	public void actionPerformed(ActionEvent e) {
         		currentPage = 1;
         		pageNumber.setText(Integer.toString(currentPage));
-        		loadBoardGame();
+        		refresh();
         	}
         });
         btnNewButton_2_2.setBounds(677, 282, 109, 36);
@@ -181,7 +181,7 @@ public class BoardStatus extends JPanel {
         			return;
         		}
         		JFrame frame = new UpdateBoardGame (con, board_id, selectName, genre, description,
-        	    copy, min_people, max_people, min_playtime, max_playtime, rental_fee);
+        	    copy, min_people, max_people, min_playtime, max_playtime, rental_fee, BoardStatus.this);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
 //                frame.setSize(400, 300); // 프레임의 크기 설정
         		frame.setLocationRelativeTo(null);
@@ -206,7 +206,7 @@ public class BoardStatus extends JPanel {
                 	selectName = null;
                 } 
                 
-        		loadBoardGame();
+        		refresh();
         	}
         });
         btnNewButton_1_1_1.setBounds(677, 236, 109, 36);
@@ -227,7 +227,7 @@ public class BoardStatus extends JPanel {
                 if (currentPage < totalPage) {
                     currentPage++;
                     pageNumber.setText(Integer.toString(currentPage));
-                    loadBoardGame();
+                    refresh();
                 }
         	}
         });
@@ -240,7 +240,7 @@ public class BoardStatus extends JPanel {
         		 if (currentPage > 1) {
                      currentPage--;
                      pageNumber.setText(Integer.toString(currentPage));
-                     loadBoardGame();
+                     refresh();
                  }
         	}
         });
@@ -250,7 +250,7 @@ public class BoardStatus extends JPanel {
         JButton btnSearchFilter = new JButton("조회 필터");
         btnSearchFilter.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new SearchFilter (con);
+        		JFrame frame = new SearchFilter (con, BoardStatus.this);
                 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
                 		frame.setLocationRelativeTo(null); // 위치 
                         frame.setVisible(true); 		
@@ -300,7 +300,7 @@ public class BoardStatus extends JPanel {
         });
     }
     
-    public void loadBoardGame() {
+    public void loadBoardGame(ResultSet resultData) {
     	for (int row = 0; row < table.getRowCount(); row++) {
             for (int col = 0; col < table.getColumnCount(); col++) {
                 table.setValueAt(null, row, col);
@@ -310,15 +310,15 @@ public class BoardStatus extends JPanel {
     	 int startRow = (currentPage - 1) * pageSize;
          int endRow = currentPage * pageSize -1;
     	
-    	ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement(con);
+    	
     	try {
-    		int columnCount = result.getMetaData().getColumnCount();
+    		int columnCount = resultData.getMetaData().getColumnCount();
 			int row = 0;
-    		while (result.next()) {
+    		while (resultData.next()) {
     			if (startRow <= row && row <= endRow) { 				
     				for (int i = 1; i <= columnCount; i++) {
 //                	rowData[i-1] = result.getObject(i);
-    					table.setValueAt(result.getObject(i), row - startRow, i-1);		
+    					table.setValueAt(resultData.getObject(i), row - startRow, i-1);		
     				}
     			}
                 row++; 
@@ -337,6 +337,7 @@ public class BoardStatus extends JPanel {
     
     }
     public void refresh() {
-    	
+    	ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement(con);
+    	loadBoardGame(result);
     }
 }

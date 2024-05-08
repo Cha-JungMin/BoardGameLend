@@ -25,7 +25,7 @@ public class App extends JFrame {
 					// DB 연결이 성공했을 때 
 					con = c;
 					boardStatus.con =c;
-					boardStatus.loadBoardGame();
+					boardStatus.refresh();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
