@@ -23,6 +23,7 @@ public class SQLCall {
 			this.con = DBConnection.getConnection();
 			this.callableStatement = this.con.prepareCall(this.callSQL);
 			callback.processCalStatementSet(this.callableStatement);
+			this.con.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

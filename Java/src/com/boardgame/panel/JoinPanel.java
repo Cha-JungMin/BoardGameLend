@@ -22,17 +22,13 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 public class JoinPanel extends JPanel {
 	
-	private LoginWindow			frame;
+	private LoginWindow		frame;
 	private JLabel 			labelId, labelPwd, labelName, labelBirth, labelPhone;
 	private JTextField		txtID, txtName, txtPhone;
 	private JPasswordField 	txtPwd;
 	private JButton			btnJoin, btnBack;
 	
-	private UtilDateModel	model;
-	private JDatePanelImpl	datePanel;
-	private JDatePickerImpl	datePicker;
-	
-	
+	private DatePicker		datePickerPanel;
 	
 	public JoinPanel(LoginWindow _frame) {
 
@@ -49,9 +45,7 @@ public class JoinPanel extends JPanel {
 		btnJoin = new JButton("Join");
 		btnBack = new JButton("Back");
 		
-		model = new UtilDateModel();
-		datePanel = new JDatePanelImpl(model);
-		datePicker = new JDatePickerImpl(datePanel);
+		datePickerPanel = new DatePicker(125, 30);
 		
 		initialization();
         
@@ -70,8 +64,7 @@ public class JoinPanel extends JPanel {
         txtID.setBounds(230, 50, 125, 15);
         txtPwd.setBounds(230, 80, 125, 15);
         txtName.setBounds(230, 110, 125, 15);
-        datePanel.setBounds(230, 135, 125, 30);
-        datePicker.setBounds(230, 135, 125, 30);
+        datePickerPanel.setBounds(230, 135, 125, 30);
         txtPhone.setBounds(230, 170, 125, 15);
         
         btnJoin.setBounds(90, 200, 120, 30);
@@ -86,7 +79,7 @@ public class JoinPanel extends JPanel {
         add(txtID);
         add(txtPwd);
         add(txtName);
-        add(datePicker);
+        add(datePickerPanel);
         add(txtPhone);
         
         add(btnJoin);
@@ -95,7 +88,6 @@ public class JoinPanel extends JPanel {
         btnJoin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int month = model.getMonth() + 1;
 				new SQLCall(
 						"{ call pkg_member.add_member_info(?, ?, ?, ?, ?, ?) }",
 						cs -> {
@@ -105,7 +97,8 @@ public class JoinPanel extends JPanel {
 								cs.setString(2, new String(txtPwd.getPassword()));
 								cs.setString(3, txtName.getText());
 								cs.setString(4, txtPhone.getText());
-								cs.setString(5, model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + model.getDay());
+								
+								cs.setString(5, datePickerPanel.getDatafomat());
 								cs.execute();
 								if (cs.getInt(6) == 1) {
 									new Alert("회원 가입이 되었습니다. 로그인 화면으로 넘어갑니다.");
