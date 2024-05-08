@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 
 import com.boardgame.db.DBConnection;
 import com.boardgame.db.SQLCall;
+import com.boardgame.window.Alert;
 import com.boardgame.window.LoginWindow;
 import com.boardgame.window.RentalWindow;
 
@@ -63,47 +64,36 @@ public class LoginPanel extends JPanel {
         btnLogin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SQLCall sql = new SQLCall(
-						"{ call pkg_member.login_member(?, ?, ?) }",
-						callableStatement -> {
+				new SQLCall(
+						"{ call pkg_member.get_login_member_no(?, ?, ?) }",
+						cs -> {
 							try {
-								callableStatement.setString(1, txtId.getText());
-								callableStatement.setString(2, new String(txtPwd.getPassword()));
-								callableStatement.registerOutParameter(3, java.sql.Types.INTEGER);
-								callableStatement.execute();
-								callableStatement.getInt(3);
-								if (callableStatement.getInt(3) == -1) {
-									String title = "BoardGameRental Login Alert";
-							        String message = "로그인에 실패했습니다. 다시 시도해 주세요.";
-							        int messageType = JOptionPane.INFORMATION_MESSAGE;
-							        JOptionPane.showMessageDialog(null, message, title, messageType);
+								cs.setString(1, txtId.getText());
+								cs.setString(2, new String(txtPwd.getPassword()));
+								cs.registerOutParameter(3, java.sql.Types.INTEGER);
+								cs.execute();
+								cs.getInt(3);
+								if (cs.getInt(3) == -1) {
+									new Alert("로그인에 실패했습니다. 다시 시도해 주세요.");
 								} else {
-									// 로그인 성공으로 페널 이동
-									frame.dispose();
-									RentalWindow window = new RentalWindow();
-									
-									SQLCall _sql = new SQLCall(
+									new SQLCall(
 											"{? = call pkg_member.get_user_grade(?) }",
-											_callableStatement -> {
+											csGrade -> {
 												try {
-													System.out.println(callableStatement.getInt(3));
-													_callableStatement.registerOutParameter(1, Types.INTEGER);
-													_callableStatement.setInt(2, callableStatement.getInt(3));
-													_callableStatement.execute();
-													System.out.println(_callableStatement.getInt(1));
-												} catch (SQLException _err) {
-													System.err.format("SQL State: %s\n%s", _err.getSQLState(), _err.getMessage());
-													_err.printStackTrace();
+													csGrade.registerOutParameter(1, Types.INTEGER);
+													csGrade.setInt(2, cs.getInt(3));
+													csGrade.execute();
+													if (csGrade.getInt(1) == 1) {
+														//관리자
+													}
+													if (csGrade.getInt(1) == 0) new RentalWindow(cs.getInt(3));
+													frame.dispose();
+												} catch (SQLException err) {
+													System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
+													err.printStackTrace();
 												}
 											}
 											);
-//									if (resultSet.getInt(8) == 1) {
-//										//관리자
-//									}
-//									if (resultSet.getInt(8) == 0) {
-//										//유저
-//										frame.dispose();
-//									}
 								}
 							} catch (SQLException err) {
 								System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());

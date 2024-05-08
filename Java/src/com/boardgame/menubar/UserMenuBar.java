@@ -20,9 +20,11 @@ public class UserMenuBar extends JMenuBar {
 	private JMenuBar		menuBar;
 	private JMenu			menuRental, menuSearch, menuInfo;
 	private JMenuItem		itemRentalBG, itemSearchBG, itemGenre, itemRentalFee, itemEdit, itemLogout;
+	private int				userId;
 	
-	public UserMenuBar(RentalWindow	_frame) {
+	public UserMenuBar(RentalWindow	_frame, int user_id) {
 		frame = _frame;
+		userId = user_id;
 		menuBar = new JMenuBar();
 		menuRental = new JMenu("Rental");
 		menuSearch = new JMenu("Search");
@@ -49,7 +51,7 @@ public class UserMenuBar extends JMenuBar {
 		itemRentalBG.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				RentalPanel panel = new RentalPanel(frame);
+				RentalPanel panel = new RentalPanel(frame, userId);
 				frame.getContentPane().removeAll();
 		        frame.getContentPane().add(panel);
 				frame.revalidate();
@@ -81,7 +83,7 @@ public class UserMenuBar extends JMenuBar {
 		itemEdit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				UserEditPanel panel = new UserEditPanel(frame);
+				UserEditPanel panel = new UserEditPanel(frame, userId);
 				frame.getContentPane().removeAll();
 		        frame.getContentPane().add(panel);
 				frame.revalidate();
@@ -93,7 +95,7 @@ public class UserMenuBar extends JMenuBar {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 					frame.dispose();
-					LoginWindow window = new LoginWindow();
+					new LoginWindow();
 			}
 		});
 		

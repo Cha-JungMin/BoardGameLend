@@ -10,10 +10,12 @@ public class RentalPanel extends JPanel {
 	
 	private RentalWindow	frame;
 	private JMenuBar		menuBar;
+	private int				userId;
 	
-	public RentalPanel(RentalWindow _frame) {
+	public RentalPanel(RentalWindow _frame, int user_id) {
 		frame = _frame;
-		menuBar = new UserMenuBar(frame);
+		userId = user_id;
+		menuBar = new UserMenuBar(frame, userId);
 		initialization();
 	}
 	
