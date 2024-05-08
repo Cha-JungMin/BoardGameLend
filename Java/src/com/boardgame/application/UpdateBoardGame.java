@@ -18,12 +18,12 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-public class EditBoardGame extends JFrame {
-
+public class UpdateBoardGame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	static Connection con;
-	static String selectName, description;
+	JTextPane textPane_2;
+	static String selectName, description, genre;
     static int board_id, copy, min_people, max_people, min_playtime, max_playtime, rental_fee;
 	/**
 	 * Launch the application.
@@ -32,7 +32,7 @@ public class EditBoardGame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					EditBoardGame frame = new EditBoardGame(con, board_id, selectName, description, copy,
+					UpdateBoardGame frame = new UpdateBoardGame(con, board_id, selectName, genre, description, copy,
 							min_people, max_people, min_playtime, max_playtime, rental_fee);
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -42,10 +42,8 @@ public class EditBoardGame extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public EditBoardGame(Connection con, int board_id, String selectName, String description,
+	
+	public UpdateBoardGame(Connection con, int board_id, String selectName, String genre, String description,
     int copy, int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee) {
 		this.board_id = board_id;
 		this.con = con;
@@ -78,6 +76,11 @@ public class EditBoardGame extends JFrame {
 		textPane_1.setText("게임 이름");
 		textPane_1.setBounds(43, 86, 114, 25);
 		contentPane.add(textPane_1);
+		
+		textPane_2 = new JTextPane();
+		textPane_2.setEditable(false);
+		textPane_2.setBounds(43, 200, 511, 34);
+		contentPane.add(textPane_2);
 		
 		JTextPane textPane_1_2 = new JTextPane();
 		textPane_1_2.setText("설명");
@@ -162,8 +165,8 @@ public class EditBoardGame extends JFrame {
 		JTextPane textPane_4_2 = new JTextPane();
 		textPane_4_2.setBounds(358, 476, 196, 34);
 		contentPane.add(textPane_4_2);
-		
 		textPane.setText(selectName);
+		textPane_2.setText(genre);
 		textPane_3.setText(description);
 		textPane_4.setText(Integer.toString(min_people));
 		textPane_4_1.setText(Integer.toString(max_people));
@@ -207,7 +210,7 @@ public class EditBoardGame extends JFrame {
 	    			return ;
 	    		}
 	    		
-	    		com.boardgame.db.BoardPack.editBoardGame(con, board_id, title, description, min_people, max_people,
+	    		com.boardgame.db.BoardPack.updateBoardGame(con, board_id, title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
 	    		JOptionPane.showMessageDialog(null, "보드게임을 수정하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
 			}
@@ -215,9 +218,32 @@ public class EditBoardGame extends JFrame {
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 26));
 		btnNewButton.setBounds(43, 688, 511, 56);
 		contentPane.add(btnNewButton);
+		
+		
+		
+		JTextPane textPane_1_1 = new JTextPane();
+		textPane_1_1.setEditable(false);
+		textPane_1_1.setText("장르");
+		textPane_1_1.setFont(new Font("굴림", Font.PLAIN, 16));
+		textPane_1_1.setBackground(UIManager.getColor("Button.background"));
+		textPane_1_1.setBounds(43, 161, 114, 25);
+		contentPane.add(textPane_1_1);
+		
+		JButton btnNewButton_1 = new JButton("장르 추가");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+        		JFrame frame = new SelectGenre(con, board_id, selectName, UpdateBoardGame.this);
+                		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+                		frame.setLocationRelativeTo(null);
+                        frame.setVisible(true); 
+			}
+		});
+		btnNewButton_1.setBounds(452, 162, 102, 34);
+		contentPane.add(btnNewButton_1);
 		StyledDocument doc = txtpnAsdasd.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
 	}
+	
 }

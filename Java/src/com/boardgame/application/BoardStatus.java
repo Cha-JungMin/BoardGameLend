@@ -29,12 +29,12 @@ public class BoardStatus extends JPanel {
     private JTextArea textArea_5, pageNumber;
     static Connection con;
     int board_id;
-    String selectName, description;
+    String selectName, description, genre;
     int copy, min_people, max_people, min_playtime, max_playtime, rental_fee;
-    
     private int currentPage = 1;
     private int pageSize = 11;
     private int totalPage = 1;
+    
     
     public BoardStatus() {
     	setBackground(SystemColor.menu);
@@ -180,7 +180,7 @@ public class BoardStatus extends JPanel {
         			JOptionPane.showMessageDialog(null, "먼저 게임을 선택해 주세요", "오류", JOptionPane.ERROR_MESSAGE);
         			return;
         		}
-        		JFrame frame = new EditBoardGame(con, board_id, selectName, description,
+        		JFrame frame = new UpdateBoardGame (con, board_id, selectName, genre, description,
         	    copy, min_people, max_people, min_playtime, max_playtime, rental_fee);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
 //                frame.setSize(400, 300); // 프레임의 크기 설정
@@ -247,6 +247,19 @@ public class BoardStatus extends JPanel {
         btnNewButton_3.setBounds(171, 399, 58, 23);
         add(btnNewButton_3);
         
+        JButton btnSearchFilter = new JButton("조회 필터");
+        btnSearchFilter.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JFrame frame = new SearchFilter (con);
+                		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+                		frame.setLocationRelativeTo(null); // 위치 
+                        frame.setVisible(true); 		
+        	}
+        });
+        btnSearchFilter.setFont(new Font("굴림", Font.PLAIN, 16));
+        btnSearchFilter.setBounds(26, 15, 109, 36);
+        add(btnSearchFilter);
+        
        
         
         
@@ -261,6 +274,7 @@ public class BoardStatus extends JPanel {
                 		board_id = ((BigDecimal) table.getValueAt(selectedRow, 0)).intValue();
                 		description = (String) table.getValueAt(selectedRow, 2);
                 		copy = ((BigDecimal) table.getValueAt(selectedRow, 3)).intValue();
+                		genre = (String) table.getValueAt(selectedRow, 4);
                 		min_people = ((BigDecimal) table.getValueAt(selectedRow, 5)).intValue();
                 		max_people = ((BigDecimal) table.getValueAt(selectedRow, 6)).intValue();
                 		min_playtime = ((BigDecimal) table.getValueAt(selectedRow, 7)).intValue();
@@ -321,5 +335,8 @@ public class BoardStatus extends JPanel {
 		}
     	
     
+    }
+    public void refresh() {
+    	
     }
 }

@@ -32,6 +32,7 @@ public class SelectGenre extends JFrame {
 	static Connection con;
 	static String selectedName;
 	static int board_id;
+	UpdateBoardGame updateBoardGame;
 	String selectedGenre;
 	/**
 	 * Launch the application.
@@ -52,7 +53,10 @@ public class SelectGenre extends JFrame {
 		
 		
 	}
-
+	public SelectGenre(Connection con, int board_id, String name, UpdateBoardGame updateBoardGame) {
+		this(con, board_id, name);
+		this.updateBoardGame = updateBoardGame;
+	}
 	/**
 	 * Create the frame.
 	 */
@@ -217,6 +221,17 @@ public class SelectGenre extends JFrame {
     public void addGenre(Connection con, int board_id, String genre) {
     	if (genre != null) {
     		com.boardgame.db.GenrePack.addGenre(con, board_id, genre);
+    		if (updateBoardGame != null) {
+    			JTextPane genreText = updateBoardGame.textPane_2;
+    			if (genreText.getText().equals("장르없음")) {
+    				genreText.setText(genre);
+    			} else {
+    				String text = genreText.getText();
+    				genreText.setText(text + ", " + genre);
+    			}
+    			
+    			
+    		}
     		JOptionPane.showMessageDialog(null, "변경이 완료되었습니다.");
     	} else {
     		JOptionPane.showMessageDialog(null, "게임을 선택 후 장르를 추가해주세요.");
