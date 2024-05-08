@@ -14,12 +14,9 @@ public class App extends JFrame {
 	private JPanel contentPane;
 	private static Connection con;
 	private static BoardStatus boardStatus;
-	/**
-	 * Launch the application.
-	 */
+
 	public static void main(String[] args) {
-		
-		// DB 연결을 스레드로 실행
+
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -48,10 +45,6 @@ public class App extends JFrame {
 		});
     }
 	
-	
-	/**
-	 * Create the frame.
-	 */
 	public App() {
 		this.setTitle("보드게임 정보");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,7 +56,6 @@ public class App extends JFrame {
 		boardStatus.setLocation(0, 0);
 		boardStatus.setSize(800, 476);
 		contentPane.add(boardStatus);
-		
 		
 		setContentPane(contentPane);
 		contentPane.setLayout(null); 

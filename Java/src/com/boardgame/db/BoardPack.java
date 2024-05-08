@@ -47,10 +47,10 @@ public class BoardPack {
          }
     }
     
-    public static void editBoardGame(Connection con, int board_id, String title, String description, 
+    public static void updateBoardGame(Connection con, int board_id, String title, String description, 
     		int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, int copy) {
     	
-    	String procedure = "{ call board_pack.edit_boardgame(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+    	String procedure = "{ call board_pack.update_boardgame(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
     	 try {
              CallableStatement callableStatement = con.prepareCall(procedure);
              callableStatement.setInt(1, board_id);
@@ -83,5 +83,29 @@ public class BoardPack {
          }
     }
     
+    public static ResultSet SearchBoardGame(Connection con, String title, String genre, 
+    		int min_people, int max_people, int min_rental_fee, int max_rental_fee) {
+    	ResultSet resultSet = null;
+    	String procedure = "{ call board_pack.search_boardgame(?, ?, ?, ?, ?, ?, ?)}";
+    	
+    	 try {
+             CallableStatement callableStatement = con.prepareCall(procedure);
+             callableStatement.setString(1, title);
+             callableStatement.setString(2, genre);
+             callableStatement.setInt(3, min_people);
+             callableStatement.setInt(4, max_people);
+             callableStatement.setInt(5, min_rental_fee);
+             callableStatement.setInt(6, max_rental_fee);
+             callableStatement.registerOutParameter(7, OracleTypes.CURSOR);
+
+             callableStatement.execute();
+             resultSet = (ResultSet) callableStatement.getObject(7);
+         } catch (SQLException e) {
+             System.out.println("프로시저에서 에러 발생!");
+             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+         }
+    	 
+    	 return resultSet;
+    }
  }
 
