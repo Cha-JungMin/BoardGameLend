@@ -9,8 +9,10 @@ import com.boardgame.panel.RentalPanel;
 public class RentalWindow extends JFrame implements Window {
 
 	private Container container = getContentPane();
+	private int userId = 0;
 
-	public RentalWindow() {
+	public RentalWindow(int user_id) {
+		this.userId = user_id;
 		initialization();
 	}
 	
@@ -22,8 +24,7 @@ public class RentalWindow extends JFrame implements Window {
         setSize(800, 600);
         setLocationRelativeTo(null);
         
-        RentalPanel rentalPanel = new RentalPanel(RentalWindow.this);
-        container.add(rentalPanel);
+        container.add(new RentalPanel(RentalWindow.this, this.userId));
         
         setVisible(true);
 	}

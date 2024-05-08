@@ -7,10 +7,10 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 
-import com.boardgame.panel.JoinPanel;
-import com.boardgame.panel.LoginPanel;
 import com.boardgame.panel.RentalPanel;
+import com.boardgame.panel.UserEditPanel;
 import com.boardgame.window.LoginWindow;
 import com.boardgame.window.RentalWindow;
 
@@ -20,9 +20,11 @@ public class UserMenuBar extends JMenuBar {
 	private JMenuBar		menuBar;
 	private JMenu			menuRental, menuSearch, menuInfo;
 	private JMenuItem		itemRentalBG, itemSearchBG, itemGenre, itemRentalFee, itemEdit, itemLogout;
+	private int				userId;
 	
-	public UserMenuBar(RentalWindow	_frame) {
+	public UserMenuBar(RentalWindow	_frame, int user_id) {
 		frame = _frame;
+		userId = user_id;
 		menuBar = new JMenuBar();
 		menuRental = new JMenu("Rental");
 		menuSearch = new JMenu("Search");
@@ -49,12 +51,11 @@ public class UserMenuBar extends JMenuBar {
 		itemRentalBG.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		        Container panel = getParent();
-				RentalPanel rentalPanel = new RentalPanel(frame);
-				panel.remove(panel);
-				panel.add(rentalPanel);
-				panel.revalidate();
-				panel.repaint();
+				RentalPanel panel = new RentalPanel(frame, userId);
+				frame.getContentPane().removeAll();
+		        frame.getContentPane().add(panel);
+				frame.revalidate();
+		        frame.repaint();
 			}
 		});
 		
@@ -82,7 +83,11 @@ public class UserMenuBar extends JMenuBar {
 		itemEdit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				UserEditPanel panel = new UserEditPanel(frame, userId);
+				frame.getContentPane().removeAll();
+		        frame.getContentPane().add(panel);
+				frame.revalidate();
+		        frame.repaint();
 			}
 		});
 		
@@ -90,7 +95,7 @@ public class UserMenuBar extends JMenuBar {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 					frame.dispose();
-					LoginWindow window = new LoginWindow();
+					new LoginWindow();
 			}
 		});
 		
