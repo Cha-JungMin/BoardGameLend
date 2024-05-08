@@ -18,11 +18,13 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-public class AddBoardGame extends JFrame {
-
+public class UpdateBoardGame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	static Connection con;
+	JTextPane textPane_2;
+	static String selectName, description, genre;
+    static int board_id, copy, min_people, max_people, min_playtime, max_playtime, rental_fee;
 	/**
 	 * Launch the application.
 	 */
@@ -30,7 +32,8 @@ public class AddBoardGame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddBoardGame frame = new AddBoardGame(con);
+					UpdateBoardGame frame = new UpdateBoardGame(con, board_id, selectName, genre, description, copy,
+							min_people, max_people, min_playtime, max_playtime, rental_fee);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -39,12 +42,12 @@ public class AddBoardGame extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public AddBoardGame(Connection con) {
+	
+	public UpdateBoardGame(Connection con, int board_id, String selectName, String genre, String description,
+    int copy, int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee) {
+		this.board_id = board_id;
 		this.con = con;
-		setTitle("보드게임 추가");
+		setTitle("보드게임 수정");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 627, 791);
 		contentPane = new JPanel();
@@ -58,7 +61,7 @@ public class AddBoardGame extends JFrame {
 		txtpnAsdasd.setForeground(UIManager.getColor("Button.foreground"));
 		txtpnAsdasd.setBackground(new Color(171, 165, 165));
 		txtpnAsdasd.setEditable(false);
-		txtpnAsdasd.setText("보드게임 정보입력");
+		txtpnAsdasd.setText("보드게임 정보수정" + "(" + selectName + ")" );
 		txtpnAsdasd.setBounds(12, 24, 589, 43);
 		contentPane.add(txtpnAsdasd);
 		
@@ -73,6 +76,11 @@ public class AddBoardGame extends JFrame {
 		textPane_1.setText("게임 이름");
 		textPane_1.setBounds(43, 86, 114, 25);
 		contentPane.add(textPane_1);
+		
+		textPane_2 = new JTextPane();
+		textPane_2.setEditable(false);
+		textPane_2.setBounds(43, 200, 511, 34);
+		contentPane.add(textPane_2);
 		
 		JTextPane textPane_1_2 = new JTextPane();
 		textPane_1_2.setText("설명");
@@ -157,8 +165,17 @@ public class AddBoardGame extends JFrame {
 		JTextPane textPane_4_2 = new JTextPane();
 		textPane_4_2.setBounds(358, 476, 196, 34);
 		contentPane.add(textPane_4_2);
+		textPane.setText(selectName);
+		textPane_2.setText(genre);
+		textPane_3.setText(description);
+		textPane_4.setText(Integer.toString(min_people));
+		textPane_4_1.setText(Integer.toString(max_people));
+		textPane_5.setText(Integer.toString(min_playtime));
+		textPane_4_2.setText(Integer.toString(max_playtime));
+		textPane_5_1.setText(Integer.toString(rental_fee));
+		textPane_5_2.setText(Integer.toString(copy));
 		
-		JButton btnNewButton = new JButton("보드게임 추가하기");
+		JButton btnNewButton = new JButton("보드게임 수정하기");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String title = textPane.getText();
@@ -193,18 +210,40 @@ public class AddBoardGame extends JFrame {
 	    			return ;
 	    		}
 	    		
-	    		
-	    		com.boardgame.db.BoardPack.createBoardGame(con, title, description, min_people, max_people,
+	    		com.boardgame.db.BoardPack.updateBoardGame(con, board_id, title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
-	    		JOptionPane.showMessageDialog(null, "보드게임을 추가하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
+	    		JOptionPane.showMessageDialog(null, "보드게임을 수정하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 26));
 		btnNewButton.setBounds(43, 688, 511, 56);
 		contentPane.add(btnNewButton);
+		
+		
+		
+		JTextPane textPane_1_1 = new JTextPane();
+		textPane_1_1.setEditable(false);
+		textPane_1_1.setText("장르");
+		textPane_1_1.setFont(new Font("굴림", Font.PLAIN, 16));
+		textPane_1_1.setBackground(UIManager.getColor("Button.background"));
+		textPane_1_1.setBounds(43, 161, 114, 25);
+		contentPane.add(textPane_1_1);
+		
+		JButton btnNewButton_1 = new JButton("장르 추가");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+        		JFrame frame = new SelectGenre(con, board_id, selectName, UpdateBoardGame.this);
+                		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+                		frame.setLocationRelativeTo(null);
+                        frame.setVisible(true); 
+			}
+		});
+		btnNewButton_1.setBounds(452, 162, 102, 34);
+		contentPane.add(btnNewButton_1);
 		StyledDocument doc = txtpnAsdasd.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
 	}
+	
 }
