@@ -2,6 +2,7 @@ package com.boardgame.panel;
 
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 
 import com.boardgame.menubar.UserMenuBar;
 import com.boardgame.window.RentalWindow;

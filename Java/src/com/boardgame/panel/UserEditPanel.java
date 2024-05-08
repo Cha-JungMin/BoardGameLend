@@ -105,7 +105,7 @@ public class UserEditPanel extends JPanel {
 				});
 	}
 	
-	private void setUserInfo(String userID, String userName, String userBirth, String userPhone, String userJoinDate) {
+	private void setUserInfo(String userID, String userName, String userPhone, String userBirth, String userJoinDate) {
 		labelUserId = new JLabel(userID);
 		labelUserName = new JLabel(userName);
 		labelUserBirth = new JLabel(userBirth);
@@ -113,7 +113,7 @@ public class UserEditPanel extends JPanel {
 		labelUserJoinDate = new JLabel(userJoinDate);
 		txtPwd = new JPasswordField();
 		txtNewPwd = new JPasswordField();
-		labelUserId.setBounds(110, 50, 50, 15);
+		labelUserId.setBounds(110, 50, 180, 15);
 		txtPwd.setBounds(130, 82, 100, 15);
 		txtNewPwd.setBounds(160, 112, 100, 15);
         labelUserName.setBounds(135, 140, 100, 15);
