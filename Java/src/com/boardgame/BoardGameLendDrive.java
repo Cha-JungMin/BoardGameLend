@@ -7,7 +7,7 @@ import com.boardgame.window.RentalWindow;
 public class BoardGameLendDrive {
 	
 	public static void main(String[] args) {
-		LoginWindow window = new LoginWindow();
-//		new RentalWindow(5);
+//		LoginWindow window = new LoginWindow();
+		new RentalWindow(5);
 	}
 }

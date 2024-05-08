@@ -1,5 +1,9 @@
 package com.boardgame.panel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
+
 import javax.swing.JPanel;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -32,9 +36,28 @@ public class DatePicker extends JPanel {
         add(datePicker);
 	}
 	
+	public void setNowDate() {
+		LocalDate now = LocalDate.now();
+		model.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		model.setSelected(true);
+	}
+	
 	public String getDatafomat() {
 		int month = this.model.getMonth() + 1;
 		return this.model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + this.model.getDay();
+	}
+	
+	public void setChangeEvent(ChangeListener callback) {
+		datePicker.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				callback.onChange();
+			}
+		});
+	}
+	
+	public LocalDate getLocalDate() {
+		return LocalDate.of(this.model.getYear(), this.model.getMonth() + 1, this.model.getDay());
 	}
 	
 	public static String getDatafomat(UtilDateModel _model) {
