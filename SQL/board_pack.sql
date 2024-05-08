@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 금요일-5월-03-2024   
+--  파일이 생성됨 - 수요일-5월-08-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package BOARD_PACK
@@ -10,15 +10,16 @@ is
     procedure create_boardgame 
         (p_title varchar2, p_description varchar2, p_min_peoeple number, p_max_people number,
          p_min_play_time number, p_max_play_time number, p_rental_fee number, p_stock number);
-    procedure view_boardgames;
-    procedure edit_boardgame 
+    procedure search_boardgames (p_title varchar2, p_genre varchar2,  p_min_people number,
+         p_max_people number, p_min_rental_fee number, p_max_rental_fee number, statement_cursor out sys_refcursor);
+    procedure update_boardgame 
         (p_board_id number, p_title varchar2, p_description varchar2, p_min_peoeple number,
          p_max_people number, p_min_play_time number, p_max_play_time number,
          p_rental_fee number, p_copy number);
     procedure delete_boardgame (p_board_id number);
-    
-    procedure board_game_statement (statement_cursor OUT SYS_REFCURSOR);
-    procedure edit_board_copy (p_board_id number, p_copy number);
+
+    procedure board_game_statement (statement_cursor out sys_refcursor);
+    procedure update_board_copy (p_board_id number, p_copy number); 
 end;
 
 /
@@ -45,13 +46,46 @@ is
         end loop;
     end;
 
-    procedure view_boardgames 
+    procedure search_boardgames (p_title in varchar2, p_genre in varchar2,  p_min_people in number,
+         p_max_people in number, p_min_rental_fee in number, p_max_rental_fee in number, statement_cursor out sys_refcursor)
     is
     begin
-        null;
+         open statement_cursor for
+        select b.board_id, b.game_title, b.description, count(bcopy.board_game_board_id) 개수,
+            NVL(gen.장르, '장르없음') as 장르,
+            b.min_people as 최소인원, b.max_people as 최대인원, 
+            b.min_play_time "최소 플레이 시간", b.max_play_time "최대 플레이 시간", 
+            b.rental_fee as "대여료(일)"
+        from
+            board_game b
+            left join board_game_copy bcopy on b.board_id = bcopy.board_game_board_id
+            left join 
+                (
+                    select 
+                        bg.board_game_board_id, 
+                        listagg(gen.genre, ', ') within group (order by gen.genre) as 장르
+                    from 
+                        board_genre bg
+                        join genre gen on bg.genre_genre_id = gen.genre_id
+                    group by 
+                        bg.board_game_board_id
+                ) gen ON b.board_id = gen.board_game_board_id
+        where
+            (b.game_title like '%' ||p_title || '%')
+            and (gen.장르 like '%' || p_genre || '%')
+            and (b.min_people >= p_min_people)
+            and (b.max_people <= p_max_people)
+            and (b.rental_fee >= p_min_rental_fee) 
+            and (b.rental_fee <= p_max_rental_fee)
+        group by 
+            b.board_id, b.game_title, b.description, NVL(gen.장르, '장르없음'),
+            b.min_people, b.max_people, b.min_play_time, b.max_play_time, 
+            b.rental_fee
+        order by 
+            b.game_title;
     end;
 
-    procedure edit_boardgame
+    procedure update_boardgame 
         (p_board_id in number, p_title in varchar2, p_description  in varchar2,
          p_min_peoeple in number, p_max_people in number, p_min_play_time in number, 
          p_max_play_time in number, p_rental_fee in number, p_copy number)
@@ -63,14 +97,20 @@ is
         min_play_time = p_min_play_time, max_play_time = p_max_play_time,
         rental_fee = p_rental_fee
         where board_id = p_board_id;
+        commit;
         
-        edit_board_copy(p_board_id, p_copy);
+        update_board_copy(p_board_id, p_copy);
+        commit;
+        update rental_detail
+        set game_title = p_title
+        where boardgame_board_id = p_board_id;
+        commit;
     end;
     
     procedure delete_boardgame (p_board_id number)
     is
     begin
-        null;
+        delete board_game where board_id = p_board_id;
     end;
     
     procedure board_game_statement (statement_cursor OUT SYS_REFCURSOR)
@@ -78,29 +118,34 @@ is
     is
     begin
         open statement_cursor for
-        select b.game_title, b.description, count(bcopy.board_game_board_id) 개수,
-               gen.장르,
-               b.min_people as 최소인원, b.max_people as 최대인원, b.min_play_time "최소 플레이 시간",
-               b.max_play_time "최대 플레이 시간", b.rental_fee as 시간당_가격
-               
-        from board_game b
-        join board_game_copy bcopy on b.board_id = bcopy.board_game_board_id
-        join 
-            (
-                select distinct
-                    bg.board_game_board_id, 
-                    listagg(gen.genre, ', ') within group (order by gen.genre) as 장르
-                from board_genre bg
-                join genre gen on bg.genre_genre_id = gen.genre_id
-                group by bg.board_game_board_id
-            ) gen ON b.board_id = gen.board_game_board_id
-            
-        group by b.game_title,  b.description, gen.장르,
-        b.min_people, b.max_people, b.min_play_time, b.max_play_time, b.rental_fee
-        order by b.game_title;
+            select b.board_id, b.game_title, b.description, count(bcopy.board_game_board_id) 개수,
+                NVL(gen.장르, '장르없음') as 장르, -- 장르가 없는 경우 '장르없음'
+                b.min_people as 최소인원, b.max_people as 최대인원, 
+                b.min_play_time "최소 플레이 시간",b.max_play_time "최대 플레이 시간", 
+                b.rental_fee as "대여료(일)"
+            from 
+                board_game b
+                left join board_game_copy bcopy on b.board_id = bcopy.board_game_board_id
+                left join 
+                    (
+                        select 
+                            bg.board_game_board_id, 
+                            listagg(gen.genre, ', ') within group (order by gen.genre) as 장르
+                        from 
+                            board_genre bg
+                            join genre gen on bg.genre_genre_id = gen.genre_id
+                        group by 
+                            bg.board_game_board_id
+                    ) gen ON b.board_id = gen.board_game_board_id
+            group by 
+                b.board_id, b.game_title,  b.description, NVL(gen.장르, '장르없음'),
+                b.min_people, b.max_people, b.min_play_time, b.max_play_time, 
+                b.rental_fee
+            order by 
+                b.game_title;
     end;
     
-    procedure edit_board_copy (p_board_id in number, p_copy in number)
+    procedure update_board_copy (p_board_id in number, p_copy in number)
     is
         v_cur number;
     begin
