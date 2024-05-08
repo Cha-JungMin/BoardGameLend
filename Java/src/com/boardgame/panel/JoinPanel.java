@@ -13,6 +13,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.boardgame.db.SQLCall;
+import com.boardgame.window.Alert;
 import com.boardgame.window.LoginWindow;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -95,30 +96,22 @@ public class JoinPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int month = model.getMonth() + 1;
-				SQLCall sql = new SQLCall(
+				new SQLCall(
 						"{ call pkg_member.add_member_info(?, ?, ?, ?, ?, ?) }",
-						callableStatement -> {
+						cs -> {
 							try {
-								callableStatement.registerOutParameter(6, java.sql.Types.INTEGER);
-								callableStatement.setString(1, txtID.getText());
-								callableStatement.setString(2, new String(txtPwd.getPassword()));
-								callableStatement.setString(3, txtName.getText());
-								callableStatement.setString(4, txtPhone.getText());
-								callableStatement.setString(5, model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + model.getDay());
-								callableStatement.execute();
-								if (callableStatement.getInt(6) == 1) {
-									String title = "BoardGameRental Login Alert";
-									String message = "회원 가입이 되었습니다. 로그인 화면으로 넘어갑니다.";
-							        int messageType = JOptionPane.INFORMATION_MESSAGE;
-							        JOptionPane.showMessageDialog(null, message, title, messageType);
+								cs.registerOutParameter(6, java.sql.Types.INTEGER);
+								cs.setString(1, txtID.getText());
+								cs.setString(2, new String(txtPwd.getPassword()));
+								cs.setString(3, txtName.getText());
+								cs.setString(4, txtPhone.getText());
+								cs.setString(5, model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + model.getDay());
+								cs.execute();
+								if (cs.getInt(6) == 1) {
+									new Alert("회원 가입이 되었습니다. 로그인 화면으로 넘어갑니다.");
 							        btnBack.doClick();
 								}
-								if (callableStatement.getInt(6) == 0) {
-									String title = "BoardGameRental Login Alert";
-							        String message = "회원 가입에 실패 했습니다. 다시 시도해 주세요.";
-							        int messageType = JOptionPane.INFORMATION_MESSAGE;
-							        JOptionPane.showMessageDialog(null, message, title, messageType);
-								}
+								if (cs.getInt(6) == 0) new Alert("회원 가입에 실패 했습니다. 다시 시도해 주세요.");
 							} catch (SQLException err) {
 								if (err.getErrorCode() == -20100) {
 									System.err.format("SQL State -20100: %s\n%s", err.getSQLState(), err.getMessage());

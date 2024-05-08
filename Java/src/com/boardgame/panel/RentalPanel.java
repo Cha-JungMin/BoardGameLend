@@ -1,8 +1,6 @@
 package com.boardgame.panel;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import com.boardgame.menubar.UserMenuBar;
@@ -12,10 +10,12 @@ public class RentalPanel extends JPanel {
 	
 	private RentalWindow	frame;
 	private JMenuBar		menuBar;
+	private int				userId;
 	
-	public RentalPanel(RentalWindow _frame) {
+	public RentalPanel(RentalWindow _frame, int user_id) {
 		frame = _frame;
-		menuBar = new UserMenuBar(frame);
+		userId = user_id;
+		menuBar = new UserMenuBar(frame, userId);
 		initialization();
 	}
 	
