@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.boardgame.application.App;
 import com.boardgame.db.DBConnection;
 import com.boardgame.db.SQLCall;
 import com.boardgame.window.Alert;
@@ -76,7 +77,7 @@ public class LoginPanel extends JPanel {
 								if (cs.getInt(3) == -1) {
 									new Alert("로그인에 실패했습니다. 다시 시도해 주세요.");
 								} else {
-									new SQLCall(
+									SQLCall gradeCall = new SQLCall(
 											"{? = call pkg_member.get_user_grade(?) }",
 											csGrade -> {
 												try {
@@ -85,6 +86,8 @@ public class LoginPanel extends JPanel {
 													csGrade.execute();
 													if (csGrade.getInt(1) == 1) {
 														//관리자
+														new App(csGrade.getConnection());
+														
 													}
 													if (csGrade.getInt(1) == 0) new RentalWindow(cs.getInt(3));
 													frame.dispose();

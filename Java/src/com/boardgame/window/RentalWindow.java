@@ -28,5 +28,6 @@ public class RentalWindow extends JFrame implements Window {
         
         setVisible(true);
 	}
+	
 
 }

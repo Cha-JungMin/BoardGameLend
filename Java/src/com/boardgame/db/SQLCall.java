@@ -27,5 +27,9 @@ public class SQLCall {
 			e.printStackTrace();
 		}
 	}
+	
+	public Connection getConnection() {
+		return this.con;
+	}
 
 }
