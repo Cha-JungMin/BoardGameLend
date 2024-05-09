@@ -1,5 +1,7 @@
 package com.boardgame.panel;
 
+import java.time.LocalDate;
+
 import javax.swing.JPanel;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -42,4 +44,9 @@ public class DatePicker extends JPanel {
 		return _model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + _model.getDay();
 	}
 	
+	public void setDateToday() {
+		LocalDate now = LocalDate.now();
+		model.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
+		model.setSelected(true);
+	}
 }
