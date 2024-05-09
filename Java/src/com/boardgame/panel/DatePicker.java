@@ -65,9 +65,12 @@ public class DatePicker extends JPanel {
 		return _model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + _model.getDay();
 	}
 	
-	public void setDateToday() {
-		LocalDate now = LocalDate.now();
-		model.setDate(now.getYear(), now.getMonthValue() - 1, now.getDayOfMonth());
-		model.setSelected(true);
+	public void setDateFromToday(int week) {
+		 LocalDate now = LocalDate.now();
+
+	    // 현재 날짜로부터 일주일 뒤 날짜 설정
+	    LocalDate oneWeekAhead = now.plusWeeks(week);
+	    model.setDate(oneWeekAhead.getYear(), oneWeekAhead.getMonthValue() - 1, oneWeekAhead.getDayOfMonth());
+	    model.setSelected(true);
 	}
 }
