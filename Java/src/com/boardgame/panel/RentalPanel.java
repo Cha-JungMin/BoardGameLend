@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 
 import com.boardgame.db.SQLCall;
 import com.boardgame.menubar.UserMenuBar;
-import com.boardgame.window.RentalWindow;
 
 import oracle.jdbc.internal.OracleTypes;
 
@@ -67,12 +66,12 @@ public class RentalPanel extends JPanel {
         add(tbCheckRental);
         
         startPickerPanel.setChangeEvent(() -> {
-        	System.out.println("Selected Date: " + getDateComparison());
+        	System.out.println("start date");
             if (getDateComparison()) setDateTime();
             getIsRental();
         });
         endPickerPanel.setChangeEvent(() -> {
-        	System.out.println("Selected Date: " + getDateComparison());
+        	System.out.println("end date");
             if (getDateComparison()) setDateTime();
             getIsRental();
         });
@@ -99,7 +98,7 @@ public class RentalPanel extends JPanel {
 									};
 							tbListData.add(objData);
 						}
-						tbIsRental.setTableData(tbListData.stream().toArray(Object[][]::new));
+						setDataTbIsRental();
 					} catch (SQLException err) {
 						System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
 						err.printStackTrace();
@@ -117,6 +116,13 @@ public class RentalPanel extends JPanel {
 		LocalDate startDate = startPickerPanel.getLocalDate();
 		LocalDate endDate = endPickerPanel.getLocalDate();
 		return startDate.isAfter(endDate);
+	}
+	
+	private void setDataTbIsRental() {
+		tbIsRental.setTableData(tbListData.stream().toArray(Object[][]::new));
+		tbIsRental.getSltItem(() -> {
+        	
+        });
 	}
 	
 }

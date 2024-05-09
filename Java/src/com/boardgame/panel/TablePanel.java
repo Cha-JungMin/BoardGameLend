@@ -2,6 +2,8 @@ package com.boardgame.panel;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
@@ -39,6 +41,19 @@ public class TablePanel extends JScrollPane {
     public void setTableData(Object[][] _datas) {
     	this.datas = _datas;
     	createObjects();
+    }
+    
+    public void getSltItem(ChangeListener callback) {
+    	tb.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					callback.onChange();
+					System.out.println(e.getValueIsAdjusting());
+					System.out.println(tb.getSelectedRow());
+				}
+			}
+		});
     }
     
 }
