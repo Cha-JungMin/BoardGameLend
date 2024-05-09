@@ -43,14 +43,12 @@ public class TablePanel extends JScrollPane {
     	createObjects();
     }
     
-    public void getSltItem(ChangeListener callback) {
+    public void getSltItem(IntChangeListener callback) {
     	tb.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-					callback.onChange();
-					System.out.println(e.getValueIsAdjusting());
-					System.out.println(tb.getSelectedRow());
+					callback.onChange(tb.getSelectedRow());
 				}
 			}
 		});

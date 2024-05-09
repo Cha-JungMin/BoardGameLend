@@ -1,10 +1,14 @@
 package com.boardgame.panel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -12,6 +16,7 @@ import javax.swing.JPanel;
 
 import com.boardgame.db.SQLCall;
 import com.boardgame.menubar.UserMenuBar;
+import com.boardgame.window.Alert;
 
 import oracle.jdbc.internal.OracleTypes;
 
@@ -21,13 +26,12 @@ public class RentalPanel extends JPanel {
 	private JFrame			frame;
 	
 	private JMenuBar		menuBar;
-	
 	private JLabel			labelStart, labelEnd;
-	
 	private DatePicker		startPickerPanel, endPickerPanel;
-	
 	private TablePanel		tbIsRental, tbCheckRental;
-	private ArrayList<Object[]> tbListData;
+	private JButton			btnRental;
+	
+	private ArrayList<Object[]> dataRentalList, dataRentalCheckList;
 	
 	public RentalPanel(JFrame _frame, int user_id) {
 		frame = _frame;
@@ -38,6 +42,8 @@ public class RentalPanel extends JPanel {
 		
 		startPickerPanel = new DatePicker(200, 30);
 		endPickerPanel = new DatePicker(200, 30);
+		
+		btnRental = new JButton("Rental");
 		
 		initialization();
 	}
@@ -54,27 +60,37 @@ public class RentalPanel extends JPanel {
 		startPickerPanel.setBounds(180, 15, 200, 30);
 		endPickerPanel.setBounds(180, 55, 200, 30);
 		
+		btnRental.setBounds(685, 30, 75, 30);
+		
 		String[] headName = {"Product", "BoardGame", "Rental Fee"};
 		add(labelStart);
 		add(labelEnd);
 		add(startPickerPanel);
 		add(endPickerPanel);
+		add(btnRental);
 		
 		tbIsRental = new TablePanel(20, 90, 360, 430, headName, null);
 		tbCheckRental = new TablePanel(400, 90, 360, 430, headName, null);
+		
         add(tbIsRental);
         add(tbCheckRental);
         
         startPickerPanel.setChangeEvent(() -> {
-        	System.out.println("start date");
             if (getDateComparison()) setDateTime();
             getIsRental();
         });
         endPickerPanel.setChangeEvent(() -> {
-        	System.out.println("end date");
             if (getDateComparison()) setDateTime();
             getIsRental();
         });
+        btnRental.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dataRentalCheckList.forEach(v -> {
+					sendAddRental((int) v[0]);
+				});
+			}
+		});
         
 	}
 	
@@ -84,19 +100,19 @@ public class RentalPanel extends JPanel {
 				cs -> {
 					try {
 						cs.registerOutParameter(3, OracleTypes.CURSOR);
-						
 						cs.setString(1, startPickerPanel.getDatafomat());
 						cs.setString(2, endPickerPanel.getDatafomat());
 						cs.execute();
 						ResultSet resultSet = (ResultSet) cs.getObject(3);
-						tbListData = new ArrayList<>();
+						dataRentalList = new ArrayList<>();
+						dataRentalCheckList = new ArrayList<>();
 						while (resultSet.next()) {
 							Object[] objData = {
 									resultSet.getInt(1),
 									resultSet.getString(2),
 									resultSet.getInt(3)
 									};
-							tbListData.add(objData);
+							dataRentalList.add(objData);
 						}
 						setDataTbIsRental();
 					} catch (SQLException err) {
@@ -104,6 +120,31 @@ public class RentalPanel extends JPanel {
 						err.printStackTrace();
 					}
 				});
+	}
+	
+	private void sendAddRental(int copy_id) {
+		new SQLCall(
+				"{ call rental_pack.add_rental_detail(?, ?, ?, ?, ?) }",
+				cs -> {
+					try {
+						cs.registerOutParameter(5, java.sql.Types.INTEGER);
+						cs.setInt(1, copy_id);
+						cs.setString(2, startPickerPanel.getDatafomat());
+						cs.setString(3, endPickerPanel.getDatafomat());
+						cs.setInt(4, userId);
+						cs.execute();
+						if (cs.getInt(5) == 1) new Alert("해당 보드게임이 대여가 되었습니다.");
+						if (cs.getInt(5) == 0) new Alert("해당 보드게임을 대여하지를 못 했습니다.\n 다시 시도해 주세요.");
+						getIsRental();
+					} catch (SQLException err) {
+						System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
+						err.printStackTrace();
+					}
+				});
+	}
+	
+	private void setTbCheckRental() {
+		tbCheckRental.setTableData(dataRentalCheckList.stream().toArray(Object[][]::new));
 	}
 	
 	
@@ -119,9 +160,18 @@ public class RentalPanel extends JPanel {
 	}
 	
 	private void setDataTbIsRental() {
-		tbIsRental.setTableData(tbListData.stream().toArray(Object[][]::new));
-		tbIsRental.getSltItem(() -> {
-        	
+		setTbCheckRental();
+		tbIsRental.setTableData(dataRentalList.stream().toArray(Object[][]::new));
+		tbIsRental.getSltItem(num -> {
+			boolean check = dataRentalCheckList.stream()
+					.anyMatch(data -> Arrays.equals(dataRentalList.get(num), data));
+			if (!check) dataRentalCheckList.add(
+					dataRentalList.stream()
+                    .skip(num)
+                    .findFirst()
+                    .orElse(null)
+			);
+			setTbCheckRental();
         });
 	}
 	
