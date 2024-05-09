@@ -2,7 +2,6 @@ package com.boardgame.panel;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
@@ -14,14 +13,32 @@ public class TablePanel extends JScrollPane {
 	private TableModel 		tbModel;
     private JTableHeader	tbHeader;
     
-    public TablePanel(int x, int y, int w, int h, String[] headNames, Object[][] datas) {
-    	tbModel = new ImmutableTableModel(headNames, datas);
+    private String[]		headNames;
+    private Object[][]		datas;
+    private int				x, y, w, h;
+    
+    public TablePanel(int _x, int _y, int _w, int _h, String[] _headNames, Object[][] _datas) {
+    	this.x = _x;
+    	this.y = _y;
+    	this.w = _w;
+    	this.h = _h;
+    	this.headNames = _headNames;
+    	this.datas = _datas;
+    	createObjects();
+    }
+    
+    private void createObjects() {
+    	tbModel = new ImmutableTableModel(headNames, this.datas);
     	tb = new JTable(tbModel);
         tbHeader = tb.getTableHeader();
         this.setBounds(x, y, w, h);
         tbHeader.setReorderingAllowed(false);
         setViewportView(tb);
-        DefaultTableModel test = (DefaultTableModel) tbModel;
-        test.setDataVector(datas, headNames);
     }
+    
+    public void setTableData(Object[][] _datas) {
+    	this.datas = _datas;
+    	createObjects();
+    }
+    
 }

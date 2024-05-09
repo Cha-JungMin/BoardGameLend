@@ -4,14 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
@@ -19,13 +16,12 @@ import com.boardgame.db.SQLCall;
 import com.boardgame.menubar.UserMenuBar;
 import com.boardgame.window.Alert;
 import com.boardgame.window.LoginWindow;
-import com.boardgame.window.RentalWindow;
 
 import oracle.jdbc.internal.OracleTypes;
 
 public class UserEditPanel extends JPanel {
 	
-	private	RentalWindow	frame;
+	private	JFrame			frame;
 	private JMenuBar		menuBar;
 	private JLabel			labelId, labelPwd, labelNewPwd, labelName, labelBirth, labelPhone, labelJoinDate;
 	private JLabel			labelUserId, labelUserName, labelUserBirth, labelUserPhone, labelUserJoinDate;
@@ -33,7 +29,7 @@ public class UserEditPanel extends JPanel {
 	private JButton			btnUpdate, btnResig;
 	private int				userId;
 
-	public UserEditPanel(RentalWindow _frame, int user_id) {
+	public UserEditPanel(JFrame _frame, int user_id) {
 		frame = _frame;
 		userId = user_id;
 		menuBar = new UserMenuBar(frame, userId);

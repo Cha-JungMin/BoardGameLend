@@ -1,11 +1,11 @@
 package com.boardgame.panel;
 
-import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -19,7 +19,7 @@ import oracle.jdbc.internal.OracleTypes;
 public class RentalPanel extends JPanel {
 	
 	private int				userId;
-	private RentalWindow	frame;
+	private JFrame			frame;
 	
 	private JMenuBar		menuBar;
 	
@@ -30,7 +30,7 @@ public class RentalPanel extends JPanel {
 	private TablePanel		tbIsRental, tbCheckRental;
 	private ArrayList<Object[]> tbListData;
 	
-	public RentalPanel(RentalWindow _frame, int user_id) {
+	public RentalPanel(JFrame _frame, int user_id) {
 		frame = _frame;
 		userId = user_id;
 		menuBar = new UserMenuBar(frame, userId);
@@ -76,6 +76,7 @@ public class RentalPanel extends JPanel {
             if (getDateComparison()) setDateTime();
             getIsRental();
         });
+        
 	}
 	
 	private void getIsRental() {
@@ -91,11 +92,6 @@ public class RentalPanel extends JPanel {
 						ResultSet resultSet = (ResultSet) cs.getObject(3);
 						tbListData = new ArrayList<>();
 						while (resultSet.next()) {
-							System.out.println(
-									"제품코드: " + resultSet.getInt(1) + ", " +
-											"보드게임: " + resultSet.getString(2) + ", " +
-											"대여료: " + resultSet.getInt(3)
-									);
 							Object[] objData = {
 									resultSet.getInt(1),
 									resultSet.getString(2),
@@ -103,6 +99,7 @@ public class RentalPanel extends JPanel {
 									};
 							tbListData.add(objData);
 						}
+						tbIsRental.setTableData(tbListData.stream().toArray(Object[][]::new));
 					} catch (SQLException err) {
 						System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
 						err.printStackTrace();
