@@ -194,7 +194,7 @@ public class AddBoardGame extends JFrame {
 	    		}
 	    		
 	    		
-	    		com.boardgame.db.BoardPack.createBoardGame(con, title, description, min_people, max_people,
+	    		com.boardgame.db.BoardPack.createBoardGame(title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
 	    		JOptionPane.showMessageDialog(null, "보드게임을 추가하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
 			}

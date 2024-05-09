@@ -29,7 +29,6 @@ public class SelectGenre extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private static JTable table;
-	static Connection con;
 	static String selectedName;
 	static int board_id;
 	UpdateBoardGame updateBoardGame;
@@ -41,7 +40,7 @@ public class SelectGenre extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SelectGenre frame = new SelectGenre(con, board_id, selectedName);
+					SelectGenre frame = new SelectGenre(board_id, selectedName);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -56,15 +55,14 @@ public class SelectGenre extends JFrame {
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public SelectGenre(Connection con, int board_id, String name, UpdateBoardGame updateBoardGame) {
-		this(con, board_id, name);
+	public SelectGenre(int board_id, String name, UpdateBoardGame updateBoardGame) {
+		this(board_id, name);
 		this.updateBoardGame = updateBoardGame;
 	}
 	/**
 	 * Create the frame.
 	 */
-	public SelectGenre(Connection con, int board_id, String name) {
-		this.con = con;
+	public SelectGenre(int board_id, String name) {
 		this.board_id = board_id;
 		this.selectedName = name;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -121,7 +119,7 @@ public class SelectGenre extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String genreName = textArea.getText();
-				searchGenre(con, genreName);
+				searchGenre(genreName);
 			}
 		});
 		btnNewButton.setBounds(222, 49, 114, 33);
@@ -131,7 +129,7 @@ public class SelectGenre extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (selectedGenre != null && board_id != 0) {	
-					addGenre(con, board_id, selectedGenre);
+					addGenre(board_id, selectedGenre);
 				}
 			}
 		});
@@ -155,8 +153,8 @@ public class SelectGenre extends JFrame {
 		JButton btnNewButton_2 = new JButton("장르 만들기");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				createGenre(con, textArea.getText());
-				loadGenre(con);
+				createGenre(textArea.getText());
+				loadGenre();
 			}
 		});
 		btnNewButton_2.setBounds(337, 49, 114, 33);
@@ -166,8 +164,8 @@ public class SelectGenre extends JFrame {
 		btnNewButton_2_1.setFont(new Font("굴림", Font.PLAIN, 10));
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				deleteGenre(con, selectedGenre);
-				loadGenre(con);
+				deleteGenre(selectedGenre);
+				loadGenre();
 			}
 		});
 		btnNewButton_2_1.setBounds(364, 279, 87, 33);
@@ -176,7 +174,7 @@ public class SelectGenre extends JFrame {
 		JButton btnNewButton_3 = new JButton("장르 변경하기");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFrame frame = new UpdateGenre(con, board_id, selectedName, updateBoardGame);
+				JFrame frame = new UpdateGenre(board_id, selectedName, updateBoardGame);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
         		frame.setLocationRelativeTo(null);
                 frame.setVisible(true); 
@@ -186,12 +184,12 @@ public class SelectGenre extends JFrame {
 		btnNewButton_3.setBounds(222, 10, 156, 33);
 		contentPane.add(btnNewButton_3);
 		
-		loadGenre(con);
+		loadGenre();
 	}
 	
 	
-    public static void loadGenre(Connection con) {
-    	ResultSet result = com.boardgame.db.GenrePack.viewGenre(con);
+    public static void loadGenre() {
+    	ResultSet result = com.boardgame.db.GenrePack.viewGenre();
     	try {
 			int num = 0;
 			int row = 0;
@@ -212,8 +210,8 @@ public class SelectGenre extends JFrame {
 		}
     }
     
-    public void searchGenre(Connection con, String genre) {
-    	ResultSet result = com.boardgame.db.GenrePack.searchGenre(con, genre);
+    public void searchGenre(String genre) {
+    	ResultSet result = com.boardgame.db.GenrePack.searchGenre(genre);
     	clearTable();
     	try {
 			int num = 0;
@@ -235,9 +233,9 @@ public class SelectGenre extends JFrame {
 		}
     }
     
-    public void addGenre(Connection con, int board_id, String genre) {
+    public void addGenre(int board_id, String genre) {
     	if (genre != null) {
-    		com.boardgame.db.GenrePack.addGenre(con, board_id, genre);
+    		com.boardgame.db.GenrePack.addGenre(board_id, genre);
     		if (updateBoardGame != null) {
     			JTextPane genreText = updateBoardGame.textPane_2;
     			if (genreText.getText().equals("장르없음")) {
@@ -255,16 +253,16 @@ public class SelectGenre extends JFrame {
     	}
     }
     
-    public void createGenre(Connection con, String genre) {
+    public void createGenre(String genre) {
     	if (genre != null) {
-    		com.boardgame.db.GenrePack.createGenre(con, genre);
+    		com.boardgame.db.GenrePack.createGenre(genre);
     		JOptionPane.showMessageDialog(null, "새로운 장르를 생성하였습니다.");
     	}
     }
     
-    public void deleteGenre(Connection con, String genre) {
+    public void deleteGenre(String genre) {
     	if (genre != null) {
-    		com.boardgame.db.GenrePack.deleteGenre(con, genre);
+    		com.boardgame.db.GenrePack.deleteGenre(genre);
     		JOptionPane.showMessageDialog(null, "장르를 삭제했습니다.");
     		clearTable();
     	}

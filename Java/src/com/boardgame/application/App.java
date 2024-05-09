@@ -30,7 +30,6 @@ public class App extends JFrame {
     }
 	
 	public App(Connection con) {
-		boardStatus.con =con;
 		this.setTitle("보드게임 정보");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 508);

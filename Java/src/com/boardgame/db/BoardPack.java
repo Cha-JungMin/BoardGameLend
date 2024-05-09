@@ -8,12 +8,13 @@ import oracle.jdbc.internal.OracleTypes;
 
 public class BoardPack {
 	
-    public static ResultSet getBoardGameStatement(Connection con) {
-        String procedure = "{ call board_pack.board_game_statement(?) }";
+    public static ResultSet getBoardGameStatement() {
+        
+    	String procedure = "{ call board_pack.board_game_statement(?) }";
         ResultSet resultSet = null;
-
+        
         try {
-            CallableStatement callableStatement = con.prepareCall(procedure);
+            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
             resultSet = (ResultSet) callableStatement.getObject(1);
@@ -25,13 +26,13 @@ public class BoardPack {
         return resultSet;
     }
     
-    public static void createBoardGame(Connection con, String title, String description, 
+    public static void createBoardGame(String title, String description, 
     		int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, int copy) {
     	
     	String procedure = "{ call board_pack.create_boardgame(?, ?, ?, ?, ?, ?, ?, ?)}";
     	
     	 try {
-             CallableStatement callableStatement = con.prepareCall(procedure);
+             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
              callableStatement.setString(1, title);
              callableStatement.setString(2, description);
              callableStatement.setInt(3, min_people);
@@ -47,12 +48,12 @@ public class BoardPack {
          }
     }
     
-    public static void updateBoardGame(Connection con, int board_id, String title, String description, 
+    public static void updateBoardGame(int board_id, String title, String description, 
     		int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, int copy) {
     	
     	String procedure = "{ call board_pack.update_boardgame(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
     	 try {
-             CallableStatement callableStatement = con.prepareCall(procedure);
+             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
              callableStatement.setInt(1, board_id);
              callableStatement.setString(2, title);
              callableStatement.setString(3, description);
@@ -69,12 +70,12 @@ public class BoardPack {
          }
     }
     
-    public static void deleteBoardGame(Connection con, int board_id) {
+    public static void deleteBoardGame(int board_id) {
     	
     	String procedure = "{ call board_pack.delete_boardgame(?)}";
     	
     	 try {
-             CallableStatement callableStatement = con.prepareCall(procedure);
+             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
              callableStatement.setInt(1, board_id);
              callableStatement.execute();
          } catch (SQLException e) {
@@ -83,13 +84,13 @@ public class BoardPack {
          }
     }
     
-    public static ResultSet SearchBoardGame(Connection con, String title, String genre, 
+    public static ResultSet SearchBoardGame(String title, String genre, 
     		int min_people, int max_people, int min_rental_fee, int max_rental_fee) {
     	ResultSet resultSet = null;
     	String procedure = "{ call board_pack.search_boardgames(?, ?, ?, ?, ?, ?, ?)}";
     	
     	 try {
-             CallableStatement callableStatement = con.prepareCall(procedure);
+             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
              callableStatement.setString(1, title);
              callableStatement.setString(2, genre);
              callableStatement.setInt(3, min_people);

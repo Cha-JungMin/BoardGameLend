@@ -184,7 +184,7 @@ public class SearchFilter extends JFrame {
 			        	return;
 			        }
 
-				ResultSet result = com.boardgame.db.BoardPack.SearchBoardGame(con, board_title,
+				ResultSet result = com.boardgame.db.BoardPack.SearchBoardGame(board_title,
 						genre, min_people, max_people, min_rental_fee, max_rental_fee);
 				board.loadBoardGame(result);
 			}
