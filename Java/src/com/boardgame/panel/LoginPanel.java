@@ -86,7 +86,7 @@ public class LoginPanel extends JPanel {
 													csGrade.execute();
 													if (csGrade.getInt(1) == 1) {
 														//관리자
-														new App(csGrade.getConnection());
+														new App();
 														
 													}
 													if (csGrade.getInt(1) == 0) new RentalWindow(cs.getInt(3));

@@ -10,10 +10,12 @@ import oracle.jdbc.internal.OracleTypes;
 public class RentalPack {
 	private static Connection con = DBConnection.getConnection();
 	
-	public ResultSet getRentalHistory(String start_date, String end_date) {
+	public static ResultSet getRentalHistory(String start_date, String end_date, String username, String title) {
     	
+		if (start_date == null) {start_date = "2000/01/01";}
+		if (end_date == null) {end_date = "3000/01/01";}
 		
-		String procedure = "{ call rental_pack.get_rental_history(?, ?, ?) }";
+		String procedure = "{ call rental_pack.get_rental_history(?, ?, ?, ?, ?) }";
         ResultSet resultSet = null;
 
         try {
@@ -21,6 +23,8 @@ public class RentalPack {
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.setString(2, start_date);
             callableStatement.setString(3, end_date);
+            callableStatement.setString(4, username);
+            callableStatement.setString(5, title);
             callableStatement.execute();
             resultSet = (ResultSet) callableStatement.getObject(1);
         } catch (SQLException e) {

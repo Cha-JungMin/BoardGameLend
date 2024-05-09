@@ -12,14 +12,13 @@ public class App extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private static Connection con;
 	private static BoardStatus boardStatus;
 
 	public static void main(String[] args) {	
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					App frame = new App(con);
+					App frame = new App();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -29,7 +28,7 @@ public class App extends JFrame {
 		
     }
 	
-	public App(Connection con) {
+	public App() {
 		this.setTitle("보드게임 정보");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 508);

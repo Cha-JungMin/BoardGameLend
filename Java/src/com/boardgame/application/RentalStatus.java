@@ -7,7 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -24,7 +29,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.boardgame.db.DBConnection;
 import com.boardgame.panel.DatePicker;
 
 public class RentalStatus extends JFrame {
@@ -35,6 +39,7 @@ public class RentalStatus extends JFrame {
 	private JTable table;
 	private JTextField userTextField;
 	private JTextField boardTextField;
+	JTextPane resultCountTextPane;
 	private boolean isAsc = false;
 	/**
 	 * Launch the application.
@@ -67,14 +72,14 @@ public class RentalStatus extends JFrame {
 		DatePicker startDate = new DatePicker(200,26);
 		startDate.setLocation(97, 32);
 		startDate.setSize(200, 42);
-		startDate.setDateToday();
+		startDate.setDateFromToday(-1);
 		contentPane.add(startDate);
 		startDate.setLayout(null);
 		
 		DatePicker endDate = new DatePicker(200,26);
 		endDate.setLocation(416, 32);
 		endDate.setSize(200, 42);
-		endDate.setDateToday();
+		endDate.setDateFromToday(1);
 		contentPane.add(endDate);
 		endDate.setLayout(null);
 		
@@ -100,35 +105,35 @@ public class RentalStatus extends JFrame {
 		table = new JTable();
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null, null, null},
 			},
 			new String[] {
-				"rental_id", "\uC81C\uD488 \uBC88\uD638", "\uBCF4\uB4DC\uAC8C\uC784", "\uD68C\uC6D0", "\uB300\uC5EC \uC2DC\uC791\uC77C", "\uB300\uC5EC \uC885\uB8CC\uC77C", "\uB300\uC5EC\uB8CC", "\uC0C1\uD0DC"
+				"rental_id", "\uC81C\uD488 \uBC88\uD638", "\uBCF4\uB4DC\uAC8C\uC784", "\uD68C\uC6D0", "\uB300\uC5EC \uC2DC\uC791\uC77C", "\uB300\uC5EC \uC885\uB8CC\uC77C", "\uB300\uC5EC\uB8CC", "\uC0C1\uD0DC", "\uD3C9\uC810", "\uB313\uAE00"
 			}
 		));
 		table.getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -139,6 +144,9 @@ public class RentalStatus extends JFrame {
 		table.getColumnModel().getColumn(3).setPreferredWidth(100);
 		table.getColumnModel().getColumn(4).setPreferredWidth(100);
 		table.getColumnModel().getColumn(6).setPreferredWidth(50);
+		table.getColumnModel().getColumn(8).setPreferredWidth(50);
+		table.getColumnModel().getColumn(8).setMaxWidth(50);
+		table.getColumnModel().getColumn(9).setMaxWidth(75);
 		scrollPane.setViewportView(table);
 //		table.setBounds(25, 165, 642, 418);
 //		contentPane.add(table);
@@ -161,14 +169,7 @@ public class RentalStatus extends JFrame {
 		});
 		
 		
-		JButton btnSearch = new JButton("검색");
-		btnSearch.setFont(new Font("굴림", Font.PLAIN, 25));
-		btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnSearch.setBounds(680, 32, 104, 42);
-		contentPane.add(btnSearch);
+		
 		
 		userTextField = new JTextField();
 		userTextField.setBounds(97, 93, 200, 35);
@@ -198,8 +199,6 @@ public class RentalStatus extends JFrame {
 		boardTextPane.setBounds(344, 93, 60, 30);
 		contentPane.add(boardTextPane);
 		
-		System.out.println(startDate.getDatafomat());
-		
 		JRadioButton rdbtnByDate = new JRadioButton("기간 별 검색");
 		rdbtnByDate.setToolTipText("기간 별 검색");
         rdbtnByDate.setSelected(true);
@@ -214,10 +213,6 @@ public class RentalStatus extends JFrame {
 		rdbtnBoardGame.setBounds(675, 215, 119, 23);
 		contentPane.add(rdbtnBoardGame);
 		
-		JRadioButton rdbtnBy111111 = new JRadioButton("사용자명 검색");
-		rdbtnBy111111.setBounds(675, 240, 119, 23);
-		contentPane.add(rdbtnBy111111);
-		
 		JRadioButton rdbtnNewRadioButton_1_2_1 = new JRadioButton("평점있는 보드게임");
 		rdbtnNewRadioButton_1_2_1.setBounds(675, 483, 145, 23);
 		contentPane.add(rdbtnNewRadioButton_1_2_1);
@@ -231,7 +226,7 @@ public class RentalStatus extends JFrame {
 		btnSearch_1.setBounds(25, 603, 133, 42);
 		contentPane.add(btnSearch_1);
 		
-		JTextPane resultCountTextPane = new JTextPane();
+		resultCountTextPane = new JTextPane();
 		resultCountTextPane.setText("총 ...개의 결과");
 		resultCountTextPane.setEditable(false);
 		resultCountTextPane.setBackground(SystemColor.control);
@@ -244,6 +239,32 @@ public class RentalStatus extends JFrame {
 		btnSearch_2.setBounds(679, 512, 115, 42);
 		contentPane.add(btnSearch_2);
 		
+		JButton btnSearch = new JButton("검색");
+		btnSearch.setFont(new Font("굴림", Font.PLAIN, 25));
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String start_date = null;
+				String end_date = null;
+				String username = null;
+				String board = null;
+
+				if (rdbtnByDate.isSelected()) {
+					start_date = startDate.getDatafomat();
+					end_date = endDate.getDatafomat();
+				}    
+                if (rdbtnByUserName.isSelected()) {
+                    username = userTextField.getText();
+                    if (username.equals("")) {username = null;}
+                }
+                if (rdbtnBoardGame.isSelected()) {
+                    board = boardTextField.getText();
+                    if (board.equals("")) {board = null;}
+                }
+				get_rental_history(start_date, end_date, username, board);
+			}
+		});
+		btnSearch.setBounds(680, 32, 104, 42);
+		contentPane.add(btnSearch);
 
 		
         ActionListener radioListener = new ActionListener() {
@@ -280,11 +301,49 @@ public class RentalStatus extends JFrame {
         rdbtnByDate.addActionListener(radioListener);
         rdbtnByUserName.addActionListener(radioListener);
         rdbtnBoardGame.addActionListener(radioListener);
-
+        
+        get_rental_history();
     }
 	
+	public void load_rental_hishory(ResultSet resultSet) {
+		  DefaultTableModel model = (DefaultTableModel) table.getModel();
+		   model.setRowCount(0); 
 		
-//		int month = model.getMonth() + 1;
-//		 cs.setString(5, model.getYear() + "-" + (month < 10 ? "0" + month : month) + "-" + model.getDay());
+		try {
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			int colCount = metaData.getColumnCount();
+			int cnt = 0;
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			while (resultSet.next()) {
+				Object[] row = new Object[colCount];
+				for (int i = 1; i <= colCount; i++) {
+					 if (metaData.getColumnType(i) == Types.DATE || metaData.getColumnType(i) == Types.TIMESTAMP) {
+				            Date date = resultSet.getDate(i); 
+				            String formattedDate = (date != null) ? dateFormat.format(date) : ""; 
+				            row[i-1] = formattedDate; 
+				        } else {
+				            row[i-1] = resultSet.getObject(i); 
+				        }
+					 if (i == 8) {
+						 System.out.println(resultSet.getObject(i));
+					 }
+				}
+				model.addRow(row);
+				cnt++;
+			}
+
+			resultCountTextPane.setText("총 " + cnt +"개의 결과");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
+	
+	public void get_rental_history() {
+		get_rental_history(null, null, null, null);
+	}
+	public void get_rental_history(String start_date, String end_date, String username, String title) {
+		ResultSet result = com.boardgame.db.RentalPack.getRentalHistory(start_date, end_date, username, title);
+		load_rental_hishory(result);
+	}
+}
 
