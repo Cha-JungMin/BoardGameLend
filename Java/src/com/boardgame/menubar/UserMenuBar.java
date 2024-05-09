@@ -1,28 +1,30 @@
 package com.boardgame.menubar;
 
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 
 import com.boardgame.panel.RentalPanel;
+import com.boardgame.panel.SearchGenrePanel;
+import com.boardgame.panel.SearchRentalFeePanel;
 import com.boardgame.panel.UserEditPanel;
 import com.boardgame.window.LoginWindow;
 import com.boardgame.window.RentalWindow;
+import com.boardgame.window.SearchGenreWindow;
 
 public class UserMenuBar extends JMenuBar {
 
-	private RentalWindow	frame;
+	private JFrame			frame;
 	private JMenuBar		menuBar;
 	private JMenu			menuRental, menuSearch, menuInfo;
 	private JMenuItem		itemRentalBG, itemSearchBG, itemGenre, itemRentalFee, itemEdit, itemLogout;
 	private int				userId;
 	
-	public UserMenuBar(RentalWindow	_frame, int user_id) {
+	public UserMenuBar(JFrame _frame, int user_id) {
 		frame = _frame;
 		userId = user_id;
 		menuBar = new JMenuBar();
@@ -53,9 +55,9 @@ public class UserMenuBar extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				RentalPanel panel = new RentalPanel(frame, userId);
 				frame.getContentPane().removeAll();
-		        frame.getContentPane().add(panel);
+				frame.getContentPane().add(panel);
 				frame.revalidate();
-		        frame.repaint();
+				frame.repaint();
 			}
 		});
 		
@@ -69,14 +71,22 @@ public class UserMenuBar extends JMenuBar {
 		itemGenre.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				SearchGenrePanel panel = new SearchGenrePanel(frame, userId);
+				frame.getContentPane().removeAll();
+				frame.getContentPane().add(panel);
+				frame.revalidate();
+				frame.repaint();
 			}
 		});
 		
 		itemRentalFee.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				SearchRentalFeePanel panel = new SearchRentalFeePanel(frame, userId);
+				frame.getContentPane().removeAll();
+				frame.getContentPane().add(panel);
+				frame.revalidate();
+				frame.repaint();
 			}
 		});
 		
@@ -85,9 +95,9 @@ public class UserMenuBar extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				UserEditPanel panel = new UserEditPanel(frame, userId);
 				frame.getContentPane().removeAll();
-		        frame.getContentPane().add(panel);
+				frame.getContentPane().add(panel);
 				frame.revalidate();
-		        frame.repaint();
+				frame.repaint();
 			}
 		});
 		
