@@ -7,13 +7,15 @@ import java.sql.SQLException;
 import oracle.jdbc.internal.OracleTypes;
 
 public class GenrePack {
+	private static Connection con = DBConnection.getConnection();
+	
 	
     public static ResultSet viewGenre() {
     	String procedure = "{ call genre_pack.view_genre(?) }";
         ResultSet resultSet = null;
 
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
             resultSet = (ResultSet) callableStatement.getObject(1);
@@ -30,7 +32,7 @@ public class GenrePack {
         ResultSet resultSet = null;
 
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.setString(2, name);
             callableStatement.execute();
@@ -47,7 +49,7 @@ public class GenrePack {
     	String procedure = "{ call genre_pack.add_genre(?, ?) }";
 
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.setInt(2, board_id);
             callableStatement.setString(1, genre);
             callableStatement.execute();
@@ -62,7 +64,7 @@ public class GenrePack {
     	String procedure = "{ call genre_pack.create_genre(?) }";
 
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.setString(1, genre);
             callableStatement.execute();
         } catch (SQLException e) {
@@ -75,7 +77,7 @@ public class GenrePack {
     	String procedure = "{ call genre_pack.delete_genre(?) }";
 
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.setString(1, genre);
             callableStatement.execute();
         } catch (SQLException e) {
@@ -88,7 +90,7 @@ public class GenrePack {
     	String procedure = "{ call genre_pack.get_genre_by_game(?, ?) }";
     	 ResultSet resultSet = null;
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.setInt(2, board_id);
             callableStatement.execute();
@@ -104,7 +106,7 @@ public class GenrePack {
     	String procedure = "{ call genre_pack.delete_genre_by_game(?, ?) }";
 
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.setInt(1, board_id);
             callableStatement.setString(2, genre);
             callableStatement.execute();

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import oracle.jdbc.internal.OracleTypes;
 
 public class BoardPack {
+	private static Connection con = DBConnection.getConnection();
 	
     public static ResultSet getBoardGameStatement() {
         
@@ -14,7 +15,7 @@ public class BoardPack {
         ResultSet resultSet = null;
         
         try {
-            CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+            CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
             resultSet = (ResultSet) callableStatement.getObject(1);
@@ -32,7 +33,7 @@ public class BoardPack {
     	String procedure = "{ call board_pack.create_boardgame(?, ?, ?, ?, ?, ?, ?, ?)}";
     	
     	 try {
-             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+             CallableStatement callableStatement = con.prepareCall(procedure);
              callableStatement.setString(1, title);
              callableStatement.setString(2, description);
              callableStatement.setInt(3, min_people);
@@ -53,7 +54,7 @@ public class BoardPack {
     	
     	String procedure = "{ call board_pack.update_boardgame(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
     	 try {
-             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+             CallableStatement callableStatement = con.prepareCall(procedure);
              callableStatement.setInt(1, board_id);
              callableStatement.setString(2, title);
              callableStatement.setString(3, description);
@@ -75,7 +76,7 @@ public class BoardPack {
     	String procedure = "{ call board_pack.delete_boardgame(?)}";
     	
     	 try {
-             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+             CallableStatement callableStatement = con.prepareCall(procedure);
              callableStatement.setInt(1, board_id);
              callableStatement.execute();
          } catch (SQLException e) {
@@ -90,7 +91,7 @@ public class BoardPack {
     	String procedure = "{ call board_pack.search_boardgames(?, ?, ?, ?, ?, ?, ?)}";
     	
     	 try {
-             CallableStatement callableStatement = DBConnection.getConnection().prepareCall(procedure);
+             CallableStatement callableStatement = con.prepareCall(procedure);
              callableStatement.setString(1, title);
              callableStatement.setString(2, genre);
              callableStatement.setInt(3, min_people);

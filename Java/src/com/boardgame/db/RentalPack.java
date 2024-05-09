@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import oracle.jdbc.internal.OracleTypes;
 
 public class RentalPack {
-	public ResultSet getRentalHistory(Connection con, String start_date, String end_date) {
+	private static Connection con = DBConnection.getConnection();
+	
+	public ResultSet getRentalHistory(String start_date, String end_date) {
     	
 		
 		String procedure = "{ call rental_pack.get_rental_history(?, ?, ?) }";
