@@ -20,11 +20,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextPane;
-import java.awt.Color;
-import javax.swing.UIManager;
 import java.awt.SystemColor;
 
-public class SelectGenre extends JFrame {
+public class UpdateGenre extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -53,17 +51,18 @@ public class SelectGenre extends JFrame {
 		
 		
 	}
+
 	/**
 	 * @wbp.parser.constructor
 	 */
-	public SelectGenre(Connection con, int board_id, String name, UpdateBoardGame updateBoardGame) {
+	public UpdateGenre(Connection con, int board_id, String name, UpdateBoardGame updateBoardGame) {
 		this(con, board_id, name);
 		this.updateBoardGame = updateBoardGame;
 	}
 	/**
 	 * Create the frame.
 	 */
-	public SelectGenre(Connection con, int board_id, String name) {
+	public UpdateGenre(Connection con, int board_id, String name) {
 		this.con = con;
 		this.board_id = board_id;
 		this.selectedName = name;
@@ -116,27 +115,7 @@ public class SelectGenre extends JFrame {
 //		textArea.setText("검색");
 		textArea.setBounds(12, 48, 198, 33);
 		contentPane.add(textArea);
-		
-		JButton btnNewButton = new JButton("장르명 검색");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String genreName = textArea.getText();
-				searchGenre(con, genreName);
-			}
-		});
-		btnNewButton.setBounds(222, 49, 114, 33);
-		contentPane.add(btnNewButton);
-		
-		JButton btnNewButton_1 = new JButton("<html>선택 장르<br>적용하기</html>");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (selectedGenre != null && board_id != 0) {	
-					addGenre(con, board_id, selectedGenre);
-				}
-			}
-		});
-		btnNewButton_1.setBounds(363, 92, 88, 113);
-		contentPane.add(btnNewButton_1);
+
 		
 		JTextPane textPane = new JTextPane();
 		textPane.setBackground(SystemColor.menu);
@@ -151,19 +130,9 @@ public class SelectGenre extends JFrame {
 		selectedGame.setText(name);
 		selectedGame.setBounds(112, 10, 88, 33);
 		contentPane.add(selectedGame);
+
 		
-		JButton btnNewButton_2 = new JButton("장르 만들기");
-		btnNewButton_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				createGenre(con, textArea.getText());
-				loadGenre(con);
-			}
-		});
-		btnNewButton_2.setBounds(337, 49, 114, 33);
-		contentPane.add(btnNewButton_2);
-		
-		JButton btnNewButton_2_1 = new JButton("장르명 삭제");
-		btnNewButton_2_1.setFont(new Font("굴림", Font.PLAIN, 10));
+		JButton btnNewButton_2_1 = new JButton("장르 삭제");
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				deleteGenre(con, selectedGenre);
@@ -173,25 +142,25 @@ public class SelectGenre extends JFrame {
 		btnNewButton_2_1.setBounds(364, 279, 87, 33);
 		contentPane.add(btnNewButton_2_1);
 		
-		JButton btnNewButton_3 = new JButton("장르 변경하기");
-		btnNewButton_3.addActionListener(new ActionListener() {
+		JButton btnNewButton_2_1_1 = new JButton("장르 추가");
+		btnNewButton_2_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFrame frame = new UpdateGenre(con, board_id, selectedName, updateBoardGame);
+				JFrame frame = new SelectGenre(con, board_id, selectedName, updateBoardGame);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
         		frame.setLocationRelativeTo(null);
                 frame.setVisible(true); 
                 dispose();
 			}
 		});
-		btnNewButton_3.setBounds(222, 10, 156, 33);
-		contentPane.add(btnNewButton_3);
+		btnNewButton_2_1_1.setBounds(364, 90, 87, 33);
+		contentPane.add(btnNewButton_2_1_1);
 		
 		loadGenre(con);
 	}
 	
 	
     public static void loadGenre(Connection con) {
-    	ResultSet result = com.boardgame.db.GenrePack.viewGenre(con);
+    	ResultSet result = com.boardgame.db.GenrePack.getGenreByGame(con, board_id);
     	try {
 			int num = 0;
 			int row = 0;
@@ -211,60 +180,11 @@ public class SelectGenre extends JFrame {
 			e.printStackTrace();
 		}
     }
-    
-    public void searchGenre(Connection con, String genre) {
-    	ResultSet result = com.boardgame.db.GenrePack.searchGenre(con, genre);
-    	clearTable();
-    	try {
-			int num = 0;
-			int row = 0;
-			int col = 0;
-    		while (result.next()) {
-                table.setValueAt(result.getObject(1), row, col);
-                col++;
-                if (col >= table.getColumnCount()) { 
-                    col = 0; 
-                    row++; 
-                }
-			}
-		} catch (SQLException e) {
-			System.out.print("SQL 예외: ");
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    }
-    
-    public void addGenre(Connection con, int board_id, String genre) {
-    	if (genre != null) {
-    		com.boardgame.db.GenrePack.addGenre(con, board_id, genre);
-    		if (updateBoardGame != null) {
-    			JTextPane genreText = updateBoardGame.textPane_2;
-    			if (genreText.getText().equals("장르없음")) {
-    				genreText.setText(genre);
-    			} else {
-    				String text = genreText.getText();
-    				genreText.setText(text + ", " + genre);
-    			}
-    			
-    			
-    		}
-    		JOptionPane.showMessageDialog(null, "변경이 완료되었습니다.");
-    	} else {
-    		JOptionPane.showMessageDialog(null, "게임을 선택 후 장르를 추가해주세요.");
-    	}
-    }
-    
-    public void createGenre(Connection con, String genre) {
-    	if (genre != null) {
-    		com.boardgame.db.GenrePack.createGenre(con, genre);
-    		JOptionPane.showMessageDialog(null, "새로운 장르를 생성하였습니다.");
-    	}
-    }
+   
     
     public void deleteGenre(Connection con, String genre) {
     	if (genre != null) {
-    		com.boardgame.db.GenrePack.deleteGenre(con, genre);
+    		com.boardgame.db.GenrePack.deleteGenreByGame(con, board_id, genre);
     		JOptionPane.showMessageDialog(null, "장르를 삭제했습니다.");
     		clearTable();
     	}

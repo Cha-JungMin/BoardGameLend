@@ -232,10 +232,10 @@ public class UpdateBoardGame extends JFrame {
 		textPane_1_1.setBounds(43, 161, 114, 25);
 		contentPane.add(textPane_1_1);
 		
-		JButton btnNewButton_1 = new JButton("장르 추가");
+		JButton btnNewButton_1 = new JButton("장르 수정");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new SelectGenre(con, board_id, selectName, UpdateBoardGame.this);
+        		JFrame frame = new UpdateGenre(con, board_id, selectName, UpdateBoardGame.this);
                 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
                 		frame.setLocationRelativeTo(null);
                         frame.setVisible(true); 
