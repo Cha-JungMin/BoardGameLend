@@ -22,7 +22,6 @@ public class AddBoardGame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	static Connection con;
 	/**
 	 * Launch the application.
 	 */
@@ -30,7 +29,7 @@ public class AddBoardGame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddBoardGame frame = new AddBoardGame(con);
+					AddBoardGame frame = new AddBoardGame();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -42,8 +41,7 @@ public class AddBoardGame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AddBoardGame(Connection con) {
-		this.con = con;
+	public AddBoardGame() {
 		setTitle("보드게임 추가");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 627, 791);

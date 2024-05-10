@@ -21,7 +21,6 @@ public class SearchFilter extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private static Connection con;
 	static BoardStatus board;
 	/**
 	 * Launch the application.
@@ -30,7 +29,7 @@ public class SearchFilter extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SearchFilter frame = new SearchFilter(con, board);
+					SearchFilter frame = new SearchFilter(board);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -42,8 +41,7 @@ public class SearchFilter extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public SearchFilter(Connection con, BoardStatus board) {
-		this.con = con;
+	public SearchFilter(BoardStatus board) {
 		setTitle("검색 필터");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 551, 560);
