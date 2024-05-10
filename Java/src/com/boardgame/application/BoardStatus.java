@@ -4,10 +4,17 @@ import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,51 +23,53 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.boardgame.db.DBConnection;
+import javax.swing.JScrollPane;
 
 
 public class BoardStatus extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JTable table;
-    private JTextArea textArea_5, pageNumber;
-    static Connection con = DBConnection.getConnection();
+    private JTextArea textArea_5;
+    private boolean isAsc = false;
     int board_id;
     String selectName, description, genre;
     int copy, min_people, max_people, min_playtime, max_playtime, rental_fee;
-    private int currentPage = 1;
-    private int pageSize = 11;
-    private int totalPage = 1;
-    
     
     public BoardStatus() {
     	setBackground(SystemColor.menu);
         setLayout(null);
         
+        textArea_5 = new JTextArea();
+        textArea_5.setText("총 0개의 결과");
+        textArea_5.setEditable(false);
+        textArea_5.setBackground(SystemColor.menu);
+        textArea_5.setBounds(502, 414, 114, 29);
+        add(textArea_5);
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(26, 61, 639, 327);
+        add(scrollPane);
+        
         
         table = new JTable();
+        scrollPane.setViewportView(table);
         table.setFillsViewportHeight(true);
         table.setModel(new DefaultTableModel(
         	new Object[][] {
         		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
         	},
         	new String[] {
-        		"New column", "board_title", "description", "copy", "genre", "min_people", "max_people", "min_play_time", "max_play_time", "rental_fee"
+        		"New column", "게임 이름", "게임 설명", "개수", "포함 장르", "최소 인원", "최대 인원", "최소 플레이 시간", "최대 플레이 시간", "대여료"
         	}
         ));
         table.getColumnModel().getColumn(0).setPreferredWidth(1);
@@ -76,16 +85,55 @@ public class BoardStatus extends JPanel {
         table.getColumnModel().getColumn(8).setPreferredWidth(60);
         table.getColumnModel().getColumn(9).setPreferredWidth(95);
         table.setCellSelectionEnabled(true);
-        table.setBounds(26, 89, 639, 275);
         table.setRowHeight(25);
-        add(table);
+ 
+		table.getTableHeader().addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int col = table.columnAtPoint(e.getPoint());
+		        DefaultTableModel model = (DefaultTableModel) table.getModel();
+		        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+		        table.setRowSorter(sorter);
+		        
+		        if (isAsc == false)  {
+		        	isAsc = true;
+		        	sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(col, SortOrder.ASCENDING)));
+		        } else {
+		        	isAsc = false;
+		        	sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(col, SortOrder.DESCENDING)));
+		        }
+		    }
+		});
+        
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // 선택된 행의 인덱스를 가져옴
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) { 
+                    
+                	if (table.getValueAt(selectedRow, 0) != null) {   		
+                		board_id = ((BigDecimal) table.getValueAt(selectedRow, 0)).intValue();
+                		description = (String) table.getValueAt(selectedRow, 2);
+                		copy = ((BigDecimal) table.getValueAt(selectedRow, 3)).intValue();
+                		genre = (String) table.getValueAt(selectedRow, 4);
+                		min_people = ((BigDecimal) table.getValueAt(selectedRow, 5)).intValue();
+                		max_people = ((BigDecimal) table.getValueAt(selectedRow, 6)).intValue();
+                		min_playtime = ((BigDecimal) table.getValueAt(selectedRow, 7)).intValue();
+                		max_playtime = ((BigDecimal) table.getValueAt(selectedRow, 8)).intValue();
+                		rental_fee = ((BigDecimal) table.getValueAt(selectedRow, 9)).intValue();
+                	}
+                	selectName = (String) table.getValueAt(selectedRow, 1);
+                }
+            }
+            
+        });
         
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 5; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
         
         JButton btnNewButton_1 = new JButton("보드게임 추가");
         btnNewButton_1.setBounds(677, 95, 109, 36);
@@ -116,71 +164,14 @@ public class BoardStatus extends JPanel {
         btnNewButton_2_1.setBounds(650, 392, 136, 63);
         add(btnNewButton_2_1);
         
-        JTextArea textArea = new JTextArea();
-        textArea.setText("이름");
-        textArea.setEditable(false);
-        textArea.setBackground(SystemColor.menu);
-        textArea.setBounds(26, 61, 68, 29);
-        add(textArea);
-        
-        JTextArea textArea_1 = new JTextArea();
-        textArea_1.setText("설명");
-        textArea_1.setEditable(false);
-        textArea_1.setBackground(SystemColor.menu);
-        textArea_1.setBounds(94, 61, 152, 29);
-        add(textArea_1);
-        
-        JTextArea textArea_2 = new JTextArea();
-        textArea_2.setText("개수");
-        textArea_2.setEditable(false);
-        textArea_2.setBackground(SystemColor.menu);
-        textArea_2.setBounds(253, 61, 52, 29);
-        add(textArea_2);
-        
-        JTextArea textArea_3 = new JTextArea();
-        textArea_3.setText("장르");
-        textArea_3.setBackground(SystemColor.menu);
-        textArea_3.setBounds(306, 61, 68, 29);
-        add(textArea_3);
-        
-        JTextArea textArea_4 = new JTextArea();
-        textArea_4.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        textArea_4.setText("최소/최대 인원");
-        textArea_4.setBackground(SystemColor.menu);
-        textArea_4.setBounds(405, 62, 92, 29);
-        add(textArea_4);
-        
-        JTextArea textArea_6 = new JTextArea();
-        textArea_6.setFont(new Font("Monospaced", Font.PLAIN, 10));
-        textArea_6.setText("최소/최대 플레이 시간");
-        textArea_6.setEditable(false);
-        textArea_6.setBackground(SystemColor.menu);
-        textArea_6.setBounds(497, 64, 114, 29);
-        add(textArea_6);
-        
-        JTextArea textArea_6_2 = new JTextArea();
-        textArea_6_2.setText("대여료(일)");
-        textArea_6_2.setBackground(SystemColor.menu);
-        textArea_6_2.setBounds(611, 61, 68, 29);
-        add(textArea_6_2);
-        
         JButton btnNewButton_2_2 = new JButton("새로고침");
         btnNewButton_2_2.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		currentPage = 1;
-        		pageNumber.setText(Integer.toString(currentPage));
         		refresh();
         	}
         });
         btnNewButton_2_2.setBounds(677, 282, 109, 36);
         add(btnNewButton_2_2);
-        
-        pageNumber = new JTextArea();
-        pageNumber.setText("1");
-        pageNumber.setEditable(false);
-        pageNumber.setBackground(SystemColor.menu);
-        pageNumber.setBounds(264, 398, 37, 28);
-        add(pageNumber);
         
         JButton btnNewButton_1_1 = new JButton("게임 정보 수정");
         btnNewButton_1_1.setFont(new Font("굴림", Font.PLAIN, 11));
@@ -222,46 +213,12 @@ public class BoardStatus extends JPanel {
         });
         btnNewButton_1_1_1.setBounds(677, 236, 109, 36);
         add(btnNewButton_1_1_1);
-        
-        textArea_5 = new JTextArea();
-        textArea_5.setText("전체 페이지:");
-        textArea_5.setEditable(false);
-        textArea_5.setVisible(false);
-        textArea_5.setBackground(SystemColor.menu);
-        textArea_5.setBounds(405, 398, 96, 29);
-        add(textArea_5);
 
-        JButton btnNewButton = new JButton("▶");
-        btnNewButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		
-                if (currentPage < totalPage) {
-                    currentPage++;
-                    pageNumber.setText(Integer.toString(currentPage));
-                    refresh();
-                }
-        	}
-        });
-        btnNewButton.setBounds(317, 399, 58, 23);
-        add(btnNewButton);
-        
-        JButton btnNewButton_3 = new JButton("◀");
-        btnNewButton_3.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		 if (currentPage > 1) {
-                     currentPage--;
-                     pageNumber.setText(Integer.toString(currentPage));
-                     refresh();
-                 }
-        	}
-        });
-        btnNewButton_3.setBounds(171, 399, 58, 23);
-        add(btnNewButton_3);
         
         JButton btnSearchFilter = new JButton("조회 필터");
         btnSearchFilter.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new SearchFilter (con, BoardStatus.this);
+        		JFrame frame = new SearchFilter (BoardStatus.this);
                 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
                 		frame.setLocationRelativeTo(null); // 위치 
                         frame.setVisible(true); 		
@@ -271,37 +228,10 @@ public class BoardStatus extends JPanel {
         btnSearchFilter.setBounds(26, 15, 109, 36);
         add(btnSearchFilter);
         
-       
-        
-        
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                // 선택된 행의 인덱스를 가져옴
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) { 
-                    
-                	if (table.getValueAt(selectedRow, 0) != null) {   		
-                		board_id = ((BigDecimal) table.getValueAt(selectedRow, 0)).intValue();
-                		description = (String) table.getValueAt(selectedRow, 2);
-                		copy = ((BigDecimal) table.getValueAt(selectedRow, 3)).intValue();
-                		genre = (String) table.getValueAt(selectedRow, 4);
-                		min_people = ((BigDecimal) table.getValueAt(selectedRow, 5)).intValue();
-                		max_people = ((BigDecimal) table.getValueAt(selectedRow, 6)).intValue();
-                		min_playtime = ((BigDecimal) table.getValueAt(selectedRow, 7)).intValue();
-                		max_playtime = ((BigDecimal) table.getValueAt(selectedRow, 8)).intValue();
-                		rental_fee = ((BigDecimal) table.getValueAt(selectedRow, 9)).intValue();
-                	}
-                	selectName = (String) table.getValueAt(selectedRow, 1);
-                }
-            }
-            
-        });
-        
         btnNewButton_1.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new AddBoardGame(con);
+        		JFrame frame = new AddBoardGame();
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
 //                frame.setSize(400, 300); // 프레임의 크기 설정
         		frame.setLocationRelativeTo(null);
@@ -311,42 +241,30 @@ public class BoardStatus extends JPanel {
         });
     }
     
-    public void loadBoardGame(ResultSet resultData) {
-    	for (int row = 0; row < table.getRowCount(); row++) {
-            for (int col = 0; col < table.getColumnCount(); col++) {
-                table.setValueAt(null, row, col);
-            }
-    	}
-    	
-    	 int startRow = (currentPage - 1) * pageSize;
-         int endRow = currentPage * pageSize -1;
-    	
+    public void loadBoardGame(ResultSet resultSet) {
+    	DefaultTableModel model = (DefaultTableModel) table.getModel();
+    	model.setRowCount(0);
     	
     	try {
-    		int columnCount = resultData.getMetaData().getColumnCount();
-			int row = 0;
-    		while (resultData.next()) {
-    			if (startRow <= row && row <= endRow) { 				
-    				for (int i = 1; i <= columnCount; i++) {
-//                	rowData[i-1] = result.getObject(i);
-    					table.setValueAt(resultData.getObject(i), row - startRow, i-1);		
-    				}
-    			}
-                row++; 
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			int colCount = table.getColumnCount();
+			int cnt = 0;
+			while (resultSet.next()) {
+				Object[] row = new Object[colCount];
+				for (int i = 1; i <= colCount; i++) {
+		            row[i-1] = resultSet.getObject(i); 
+				}	
+				
+				model.addRow(row);
+				cnt++;
 			}
-    		
-    		totalPage = row / table.getColumnCount() + 1;
-    		this.textArea_5.setText("전체 페이지: " + totalPage);
-    		textArea_5.setVisible(true);
+
+			textArea_5.setText("총 " + cnt +"개의 결과");
 		} catch (SQLException e) {
-			System.out.print("SQL 예외: ");
-			e.printStackTrace();
-		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	
-    
-    }
+	}
+
     public void refresh() {
     	ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement();
     	loadBoardGame(result);

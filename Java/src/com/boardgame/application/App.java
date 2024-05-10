@@ -31,7 +31,7 @@ public class App extends JFrame {
 	public App() {
 		this.setTitle("보드게임 정보");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 800, 508);
+		setBounds(100, 100, 1100, 508);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
