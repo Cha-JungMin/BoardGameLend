@@ -13,15 +13,15 @@ import com.boardgame.panel.SearchGenrePanel;
 import com.boardgame.panel.SearchRentalFeePanel;
 import com.boardgame.panel.UserEditPanel;
 import com.boardgame.window.LoginWindow;
-import com.boardgame.window.RentalWindow;
-import com.boardgame.window.SearchGenreWindow;
 
 public class UserMenuBar extends JMenuBar {
 
 	private JFrame			frame;
 	private JMenuBar		menuBar;
 	private JMenu			menuRental, menuSearch, menuInfo;
-	private JMenuItem		itemRentalBG, itemSearchBG, itemGenre, itemRentalFee, itemEdit, itemLogout;
+	private JMenuItem		itemRentalBG, itemMyRental,
+							itemSearchBG, itemGenre, itemRentalFee,
+							itemEdit, itemLogout;
 	private int				userId;
 	
 	public UserMenuBar(JFrame _frame, int user_id) {
@@ -33,6 +33,7 @@ public class UserMenuBar extends JMenuBar {
 		menuInfo = new JMenu("Info");
 		
 		itemRentalBG = new JMenuItem("BoardGame");
+		itemMyRental = new JMenuItem("My");
 		itemSearchBG = new JMenuItem("BoardGame");
 		itemGenre = new JMenuItem("Genre");
 		itemRentalFee = new JMenuItem("RentalFee");
@@ -44,6 +45,7 @@ public class UserMenuBar extends JMenuBar {
 	
 	private void initialization() {
 		menuRental.add(itemRentalBG);
+		menuRental.add(itemMyRental);
 		menuSearch.add(itemSearchBG);
 		menuSearch.add(itemGenre);
 		menuSearch.add(itemRentalFee);
@@ -58,6 +60,13 @@ public class UserMenuBar extends JMenuBar {
 				frame.getContentPane().add(panel);
 				frame.revalidate();
 				frame.repaint();
+			}
+		});
+		
+		itemMyRental.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
 			}
 		});
 		
