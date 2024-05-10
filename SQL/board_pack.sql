@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 수요일-5월-08-2024   
+--  파일이 생성됨 - 금요일-5월-10-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package BOARD_PACK
@@ -19,7 +19,13 @@ is
     procedure delete_boardgame (p_board_id number);
 
     procedure board_game_statement (statement_cursor out sys_refcursor);
-    procedure update_board_copy (p_board_id number, p_copy number); 
+    procedure update_board_copy (p_board_id number, p_copy number);
+    
+    
+    procedure get_filter_rental_fee_info (
+        p_rental_fee		in number,
+        p_result_cursor		out sys_refcursor
+    );
 end;
 
 /
@@ -162,6 +168,23 @@ is
             delete from board_game_copy
             where board_game_board_id = p_board_id and rownum <= (v_cur - p_copy);
         end if;    
+    end;
+    
+    procedure get_filter_rental_fee_info (
+        p_rental_fee		in number,
+        p_result_cursor		out sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select bg.game_title,
+                   bg.min_people,
+                   bg.max_people,
+                   bg.min_play_time,
+                   bg.max_play_time,
+                   bg.rental_fee
+            from board_game bg
+            where bg.rental_fee <= p_rental_fee;
     end;
 end;
 

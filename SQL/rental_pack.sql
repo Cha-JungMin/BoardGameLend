@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 수요일-5월-08-2024   
+--  파일이 생성됨 - 금요일-5월-10-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package RENTAL_PACK
@@ -31,6 +31,27 @@ is
         p_end_date		in	date,
         p_result_cursor out sys_refcursor
     );
+    
+    procedure get_rental_history (statement_cursor out sys_refcursor,
+              p_start_date in date, p_end_date in date, p_username in varchar2, p_title in varchar2);
+
+    procedure add_rental_detail (
+        p_board_game_copy_id 	in 	number,
+        p_start_date 			in 	date,
+        p_end_date 				in 	date,
+        p_member_id 			in 	number,
+        p_success 				out number
+    );
+    
+    procedure update_rental_statement(p_rental_id in number);
+    
+    
+    procedure get_member_rental_detail (
+        p_member_id				in 	number,
+        p_start_date 			in 	varchar2,
+        p_end_date 				in 	varchar2,
+        p_result_cursor 		out sys_refcursor
+    );
 end;
 
 /
@@ -43,7 +64,7 @@ end;
 -- 게임이름, 상태(대여예정, 대여중, 대여완료)
 
 -- 대여 완료 상태라면 평점 + 후기 작성 프로시저 가능
----  update_rental_statement 
+---  update_rental_statement
 is
     procedure create_rental
     (p_board_id in number, p_member_id in number, p_start_date in date, p_end_date in date)
@@ -218,10 +239,139 @@ is
             where bc.copy_id not in (
                 select rd.board_game_copy_copy_id
                 from rental_detail rd
-                where rd.statement = '대여중'
-                  and rd.start_date <= p_start_date
-                  and rd.end_date >= p_end_date
+                where (rd.statement = '대여중' or rd.statement = '대여예정')
+                  and (rd.start_date <= p_start_date
+                  and rd.end_date >= p_end_date)
             );
+    end;
+    
+    procedure get_rental_history (statement_cursor out sys_refcursor,
+              p_start_date in date, p_end_date in date, p_username in varchar2, p_title in varchar2)
+    is
+    begin
+        open statement_cursor for
+        select rental_detail_id, board_game_copy_copy_id, game_title, mem.name, start_date,
+               end_date, total_fee, statement, ren.grade, rental_comment
+        from rental_detail ren
+        left join member mem on mem.member_id = ren.member_member_id
+        where (p_start_date <= start_date and end_date <= p_end_date)
+            and (p_username is null or lower(mem.name) like lower('%' || p_username || '%'))
+            and (p_title is null or game_title like '%' || p_title  || '%')
+        order by rental_detail_id desc;
+    end;
+    
+    
+    
+    
+    procedure add_rental_detail (
+        p_board_game_copy_id 	in 	number,
+        p_start_date 			in 	date,
+        p_end_date 				in 	date,
+        p_member_id 			in 	number,
+        p_success 				out number
+    )
+    is
+        v_board_id 		board_game.board_id%type;
+        v_board_title	board_game.game_title%type;
+        v_total_fee		number;
+        v_days			number;
+    begin
+    
+        -- 주어진 board_game_copy_id로부터 board_id를 찾습니다.
+        select bg.board_id, bg.game_title into v_board_id, v_board_title
+        from board_game_copy bgc
+        join board_game bg on bgc.board_game_board_id = bg.board_id
+        where bgc.copy_id = p_board_game_copy_id;
+        
+        -- 날짜 계산 후 총 대여로 값을 계산합니다.
+        v_days := trunc(to_date(p_end_date) - to_date(p_start_date)) + 1;
+        select (bg.rental_fee * v_days) into v_total_fee
+        from board_game bg
+        where bg.board_id = v_board_id;
+    
+        -- 대여 정보를 추가합니다.
+        insert into rental_detail (
+            boardgame_board_id,
+            member_member_id,
+            board_game_copy_copy_id,
+            game_title,
+            start_date,
+            end_date,
+            rental_comment,
+            grade,
+            statement,
+            total_fee
+        )
+        values (
+            v_board_id,
+            p_member_id,
+            p_board_game_copy_id,
+            v_board_title,
+            p_start_date,
+            p_end_date,
+            null,
+            null,
+            '대여중',
+            v_total_fee
+        );
+        
+        -- 성공적으로 추가되었는지 확인합니다.
+        if sql%rowcount = 1 then
+            p_success := 1; -- 성공적으로 추가된 경우
+        else
+            p_success := 0; -- 추가에 실패한 경우
+        end if;
+        
+        commit; -- 트랜잭션을 완료합니다.
+            
+    exception
+        when others then
+            p_success := 0;
+            rollback;
+            raise_application_error(-20104, 'An error occurred: ' || sqlerrm);
+    end;
+    
+    procedure update_rental_statement(p_rental_id in number)
+    is
+    begin
+        update rental_detail
+        set statement = '대여완료'
+        where rental_detail_id = p_rental_id;
+    end;
+    
+    
+    
+    procedure get_member_rental_detail (
+        p_member_id				in 	number,
+        p_start_date 			in 	varchar2,
+        p_end_date 				in 	varchar2,
+        p_result_cursor 		out sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select
+                rd.rental_detail_id,
+                bgc.copy_id,
+                bg.game_title,
+                to_char(rd.start_date,'YYYY-MM-DD'),
+                to_char(rd.end_date,'YYYY-MM-DD'),
+                rd.end_date - rd.start_date + 1 as cnt_date,
+                rd.statement,
+                rd.total_fee
+            from
+                rental_detail rd
+            join
+                board_game_copy bgc on rd.board_game_copy_copy_id = bgc.copy_id
+            join
+                board_game bg on bgc.board_game_board_id = bg.board_id
+            where
+                rd.member_member_id = p_member_id
+                and greatest(
+                        to_date(p_start_date), rd.start_date
+                    ) <= least(
+                        to_date(p_end_date), rd.end_date
+                        );
     end;
 end;
 

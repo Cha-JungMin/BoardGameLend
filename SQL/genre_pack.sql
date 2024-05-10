@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 수요일-5월-08-2024   
+--  파일이 생성됨 - 금요일-5월-10-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package GENRE_PACK
@@ -9,10 +9,18 @@
 is
     procedure create_genre (p_gname varchar2);
     procedure view_genre (view_cursor out sys_refcursor);
-    procedure search_genre (search_cursor out sys_refcursor, v_genre varchar2);
+    procedure search_genre (search_cursor out sys_refcursor, p_genre varchar2);
     procedure add_genre (p_gname varchar2, p_board_id number);
     procedure delete_genre (p_gname varchar2);
-
+    
+    procedure get_genre_by_game (p_result_cursor out sys_refcursor, p_board_id in number);
+    procedure delete_genre_by_game (p_board_id in number, p_genre in varchar2);
+    
+    procedure get_genre_info (p_result_cursor out sys_refcursor);
+    procedure get_serch_genre_boardgame_info (
+        p_board_genre_id 	in	number,
+        p_result_cursor		out	sys_refcursor
+    );
 end;
 
 /
@@ -38,11 +46,11 @@ is
     end;
     
     procedure search_genre
-    (search_cursor out sys_refcursor, v_genre in varchar2)
+    (search_cursor out sys_refcursor, p_genre in varchar2)
     is
     begin
         open search_cursor for
-        select genre from genre where genre like '%' || v_genre || '%'; 
+        select genre from genre where genre like '%' || p_genre || '%'; 
     end;
     
     procedure add_genre (p_gname in varchar2, p_board_id in number)
@@ -67,6 +75,53 @@ is
         exception when NO_DATA_FOUND then
             RAISE_APPLICATION_ERROR(-20001, '해당하는 장르가 없습니다.');
     end;
+    
+    procedure get_genre_by_game (p_result_cursor out sys_refcursor, p_board_id in number)
+    is
+    begin
+        open p_result_cursor for
+        select gen.genre
+        from board_genre bg
+        join genre gen on bg.genre_genre_id = gen.genre_id
+        where bg.board_game_board_id = p_board_id;
+        
+    end;
+    
+    procedure delete_genre_by_game (p_board_id in number, p_genre in varchar2) 
+    is
+    begin
+         delete board_genre
+         where board_game_board_id = p_board_id and 
+         genre_genre_id = (select genre_id from genre where genre = p_genre);
+    end;
+    
+    procedure get_genre_info (
+        p_result_cursor		out	sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select *
+            from genre;
+    end;
+    
+    procedure get_serch_genre_boardgame_info (
+        p_board_genre_id 	in	number,
+        p_result_cursor		out	sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select bg.game_title,
+                   bg.min_people,
+                   bg.max_people,
+                   bg.min_play_time,
+                   bg.max_play_time,
+                   bg.rental_fee
+                from board_game bg
+                join board_genre bgg on bg.board_id = bgg.board_game_board_id
+            where bgg.genre_genre_id = p_board_genre_id;
+    end;    
 end;
 
 /
