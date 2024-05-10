@@ -85,10 +85,7 @@ public class MyRentalPanel extends JPanel {
 		tbMyRental.getSltItem(num -> {
 			int rental_detail_id = (int) listMyRental.get(num)[0];
 			String status = String.valueOf(listMyRental.get(num)[6]);
-			System.out.println(rental_detail_id);
-			System.out.println(status);
 			if (status.equals("대여중") || status.equals("대여예정")) {
-				System.out.println("case1");
 				new RentalStatusUpdateWindow(frame, userId, rental_detail_id);
 			}
 			if (status.equals("대여완료")) {

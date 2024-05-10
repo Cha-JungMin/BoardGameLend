@@ -24,7 +24,7 @@ public class RentalStatusUpdateWindow extends JDialog implements Window {
 	public void initialization() {
         setSize(400, 300);
         setLocationRelativeTo(null);
-//        container.add(new RentalStatusUpdatePanel(this, this.userId, this.rentalDetailId));
+        container.add(new RentalStatusUpdatePanel(this, this.userId, this.rentalDetailId));
         setVisible(true);
 	}
 	
