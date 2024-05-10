@@ -7,13 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -31,7 +26,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.boardgame.db.DBConnection;
 import javax.swing.JScrollPane;
 
 
@@ -45,7 +39,8 @@ public class BoardStatus extends JPanel {
     String selectName, description, genre;
     int copy, min_people, max_people, min_playtime, max_playtime, rental_fee;
     
-    public BoardStatus() {
+
+	public BoardStatus() {
     	setBackground(SystemColor.menu);
         setLayout(null);
         
@@ -57,7 +52,7 @@ public class BoardStatus extends JPanel {
         add(textArea_5);
         
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(26, 61, 639, 327);
+        scrollPane.setBounds(26, 61, 969, 327);
         add(scrollPane);
         
         
@@ -69,9 +64,16 @@ public class BoardStatus extends JPanel {
         		{null, null, null, null, null, null, null, null, null, null},
         	},
         	new String[] {
-        		"New column", "게임 이름", "게임 설명", "개수", "포함 장르", "최소 인원", "최대 인원", "최소 플레이 시간", "최대 플레이 시간", "대여료"
+        		"New column", "\uAC8C\uC784 \uC774\uB984", "\uAC8C\uC784 \uC124\uBA85", "\uAC1C\uC218", "\uD3EC\uD568 \uC7A5\uB974", "\uCD5C\uC18C \uC778\uC6D0", "\uCD5C\uB300 \uC778\uC6D0", "\uCD5C\uC18C \uD50C\uB808\uC774 \uC2DC\uAC04", "\uCD5C\uB300 \uD50C\uB808\uC774 \uC2DC\uAC04", "\uB300\uC5EC\uB8CC"
         	}
-        ));
+        ) {
+			Class[] columnTypes = new Class[] {
+        		Object.class, Object.class, Object.class, Integer.class, Object.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class
+        	};
+        	public Class getColumnClass(int columnIndex) {
+        		return columnTypes[columnIndex];
+        	}
+        });
         table.getColumnModel().getColumn(0).setPreferredWidth(1);
         table.getColumnModel().getColumn(0).setMinWidth(0);
         table.getColumnModel().getColumn(0).setMaxWidth(1);
@@ -136,7 +138,7 @@ public class BoardStatus extends JPanel {
         }
         
         JButton btnNewButton_1 = new JButton("보드게임 추가");
-        btnNewButton_1.setBounds(677, 95, 109, 36);
+        btnNewButton_1.setBounds(1007, 87, 109, 36);
         add(btnNewButton_1);
 
         JButton btnNewButton_2 = new JButton("장르 추가");
@@ -148,7 +150,7 @@ public class BoardStatus extends JPanel {
                 frame.setVisible(true); // 프레임을 보이게 함
         	}
         });
-        btnNewButton_2.setBounds(677, 147, 109, 36);
+        btnNewButton_2.setBounds(1007, 139, 109, 36);
         add(btnNewButton_2);
         
         JButton btnNewButton_2_1 = new JButton("대여현황");
@@ -170,7 +172,7 @@ public class BoardStatus extends JPanel {
         		refresh();
         	}
         });
-        btnNewButton_2_2.setBounds(677, 282, 109, 36);
+        btnNewButton_2_2.setBounds(1007, 274, 109, 36);
         add(btnNewButton_2_2);
         
         JButton btnNewButton_1_1 = new JButton("게임 정보 수정");
@@ -191,7 +193,7 @@ public class BoardStatus extends JPanel {
                 frame.setVisible(true); 
         	}
         });
-        btnNewButton_1_1.setBounds(677, 193, 109, 36);
+        btnNewButton_1_1.setBounds(1007, 185, 109, 36);
         add(btnNewButton_1_1);
         
         JButton btnNewButton_1_1_1 = new JButton("보드게임 삭제");
@@ -211,7 +213,7 @@ public class BoardStatus extends JPanel {
         		refresh();
         	}
         });
-        btnNewButton_1_1_1.setBounds(677, 236, 109, 36);
+        btnNewButton_1_1_1.setBounds(1007, 228, 109, 36);
         add(btnNewButton_1_1_1);
 
         
@@ -246,7 +248,6 @@ public class BoardStatus extends JPanel {
     	model.setRowCount(0);
     	
     	try {
-			ResultSetMetaData metaData = resultSet.getMetaData();
 			int colCount = table.getColumnCount();
 			int cnt = 0;
 			while (resultSet.next()) {
@@ -266,7 +267,17 @@ public class BoardStatus extends JPanel {
 	}
 
     public void refresh() {
-    	ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement();
-    	loadBoardGame(result);
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement();
+					loadBoardGame(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
     }
 }

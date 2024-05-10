@@ -13,11 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -76,9 +74,16 @@ public class RentalStatistic extends JFrame {
 				{null, null, null, null, null, null},
 			},
 			new String[] {
-				"게임 이름", "매출", "판매량", "댓글 수", "평점 수", "평균 평점"
+				"\uAC8C\uC784 \uC774\uB984", "\uB9E4\uCD9C", "\uD310\uB9E4\uB7C9", "\uB313\uAE00 \uC218", "\uD3C9\uC810 \uC218", "\uD3C9\uADE0 \uD3C9\uC810"
 			}
-		));
+		) {
+			Class[] columnTypes = new Class[] {
+				Object.class, Integer.class, Integer.class, Integer.class, Integer.class, Object.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
 		scrollPane.setViewportView(table);
 		
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
@@ -137,7 +142,18 @@ public class RentalStatistic extends JFrame {
 		JButton btnNewButton_1 = new JButton("게임별 통계");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadRentalStatistic(getRentalStatisticByGame());
+				Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							loadRentalStatistic(getRentalStatisticByGame());
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				thread.start();
 			}
 		});
 		btnNewButton_1.setFont(new Font("굴림", Font.PLAIN, 26));
@@ -147,14 +163,36 @@ public class RentalStatistic extends JFrame {
 		JButton btnNewButton_1_1 = new JButton("회원별 통계");
 		btnNewButton_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadRentalStatistic(getRentalStatisticByMember());
+				Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							loadRentalStatistic(getRentalStatisticByMember());
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
+				thread.start();
 			}
 		});
 		btnNewButton_1_1.setFont(new Font("굴림", Font.PLAIN, 26));
 		btnNewButton_1_1.setBounds(304, 98, 209, 58);
 		contentPane.add(btnNewButton_1_1);
 		
-		loadRentalStatistic(getRentalStatisticByGame());
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					loadRentalStatistic(getRentalStatisticByGame());
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
 	}
 	
 	private ResultSet getRentalStatisticByGame() {

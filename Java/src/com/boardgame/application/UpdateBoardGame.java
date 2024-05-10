@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -45,8 +44,6 @@ public class UpdateBoardGame extends JFrame {
 	
 	public UpdateBoardGame(int board_id, String selectName, String genre, String description,
     int copy, int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, BoardStatus board) {
-		this.board_id = board_id;
-		this.board = board;
 		setTitle("보드게임 수정");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 627, 791);
@@ -213,7 +210,9 @@ public class UpdateBoardGame extends JFrame {
 	    		com.boardgame.db.BoardPack.updateBoardGame(board_id, title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
 	    		JOptionPane.showMessageDialog(null, "보드게임을 수정하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
+	    		dispose();
 	    		board.refresh();
+	    		
 			}
 		});
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 26));

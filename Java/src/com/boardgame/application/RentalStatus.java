@@ -125,7 +125,14 @@ public class RentalStatus extends JFrame {
 			new String[] {
 				"rental_id", "\uC81C\uD488 \uBC88\uD638", "\uBCF4\uB4DC\uAC8C\uC784", "\uD68C\uC6D0", "\uB300\uC5EC \uC2DC\uC791\uC77C", "\uB300\uC5EC \uC885\uB8CC\uC77C", "\uB300\uC5EC\uB8CC", "\uC0C1\uD0DC", "\uD3C9\uC810", "\uB313\uAE00"
 			}
-		));
+		) {
+			Class[] columnTypes = new Class[] {
+				Object.class, Integer.class, Object.class, Object.class, Object.class, Object.class, Integer.class, Object.class, Integer.class, Object.class
+			};
+			public Class getColumnClass(int columnIndex) {
+				return columnTypes[columnIndex];
+			}
+		});
 		table.getColumnModel().getColumn(0).setPreferredWidth(0);
 		table.getColumnModel().getColumn(0).setMinWidth(0);
 		table.getColumnModel().getColumn(0).setMaxWidth(0);
@@ -260,7 +267,22 @@ public class RentalStatus extends JFrame {
                     board = boardTextField.getText();
                     if (board.equals("")) {board = null;}
                 }
-				get_rental_history(start_date, end_date, username, board);
+                final String final_start_date = start_date;
+                final String final_end_date = end_date;
+                final String final_username = username;
+                final String final_board = board;
+                Thread thread = new Thread(new Runnable() {
+        			@Override
+        			public void run() {
+        				try {
+        					get_rental_history(final_start_date, final_end_date, final_username, final_board);
+        					
+        				} catch (Exception e) {
+        					e.printStackTrace();
+        				}
+        			}
+        		});
+        		thread.start();
 			}
 		});
 		btnSearch.setBounds(680, 32, 104, 42);
@@ -385,8 +407,18 @@ public class RentalStatus extends JFrame {
         rdbtnByUserName.addActionListener(radioListener);
         rdbtnBoardGame.addActionListener(radioListener);
         
-        loadRentalStatement();
-        get_rental_history();
+        Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					loadRentalStatement();
+					get_rental_history();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
     }
 	
 	private void load_rental_hishory(ResultSet resultSet) {
