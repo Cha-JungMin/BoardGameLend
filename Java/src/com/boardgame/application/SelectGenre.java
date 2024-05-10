@@ -4,8 +4,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,8 +18,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextPane;
-import java.awt.Color;
-import javax.swing.UIManager;
 import java.awt.SystemColor;
 
 public class SelectGenre extends JFrame {
@@ -63,8 +59,7 @@ public class SelectGenre extends JFrame {
 	 * Create the frame.
 	 */
 	public SelectGenre(int board_id, String name) {
-		this.board_id = board_id;
-		this.selectedName = name;
+		SelectGenre.selectedName = name;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 477, 359);
 		contentPane = new JPanel();
@@ -184,14 +179,24 @@ public class SelectGenre extends JFrame {
 		btnNewButton_3.setBounds(222, 10, 156, 33);
 		contentPane.add(btnNewButton_3);
 		
-		loadGenre();
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+
+					loadGenre();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
 	}
 	
 	
     public static void loadGenre() {
     	ResultSet result = com.boardgame.db.GenrePack.viewGenre();
     	try {
-			int num = 0;
 			int row = 0;
 			int col = 0;
     		while (result.next()) {
@@ -214,7 +219,6 @@ public class SelectGenre extends JFrame {
     	ResultSet result = com.boardgame.db.GenrePack.searchGenre(genre);
     	clearTable();
     	try {
-			int num = 0;
 			int row = 0;
 			int col = 0;
     		while (result.next()) {
@@ -248,6 +252,7 @@ public class SelectGenre extends JFrame {
     			
     		}
     		JOptionPane.showMessageDialog(null, "변경이 완료되었습니다.");
+    		dispose();
     	} else {
     		JOptionPane.showMessageDialog(null, "게임을 선택 후 장르를 추가해주세요.");
     	}

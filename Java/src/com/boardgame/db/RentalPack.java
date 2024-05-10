@@ -11,7 +11,10 @@ public class RentalPack {
 	private static Connection con = DBConnection.getConnection();
 	
 	public static ResultSet getRentalHistory(String start_date, String end_date, String username, String title) {
-    	
+    	if (start_date == null && end_date == null) {
+    		start_date = "20-11-11";
+    		end_date = "30-11-11";
+    	}
 		
 		String procedure = "{ call rental_pack.get_rental_history(?, ?, ?, ?, ?) }";
         ResultSet resultSet = null;

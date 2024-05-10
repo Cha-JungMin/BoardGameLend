@@ -3,7 +3,6 @@ package com.boardgame.application;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.sql.Connection;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
@@ -13,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 

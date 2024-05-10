@@ -4,8 +4,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -38,7 +36,7 @@ public class UpdateGenre extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SelectGenre frame = new SelectGenre(board_id, selectedName);
+					UpdateGenre frame = new UpdateGenre(board_id, selectedName);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,17 +56,15 @@ public class UpdateGenre extends JFrame {
 		this(board_id, name);
 		this.updateBoardGame = updateBoardGame;
 	}
-	/**
-	 * Create the frame.
-	 */
+	
 	public UpdateGenre(int board_id, String name) {
-		this.board_id = board_id;
-		this.selectedName = name;
+		UpdateGenre.selectedName = name;
+		UpdateGenre.board_id = board_id;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 477, 359);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		this.setTitle("장르 선택");
+		this.setTitle("장르 변경");
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		table = new JTable();
@@ -152,15 +148,24 @@ public class UpdateGenre extends JFrame {
 		});
 		btnNewButton_2_1_1.setBounds(364, 90, 87, 33);
 		contentPane.add(btnNewButton_2_1_1);
-		
-		loadGenre();
+
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					loadGenre();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
 	}
-	
 	
     public static void loadGenre() {
     	ResultSet result = com.boardgame.db.GenrePack.getGenreByGame(board_id);
+    	System.out.println(board_id);
     	try {
-			int num = 0;
 			int row = 0;
 			int col = 0;
     		while (result.next()) {
