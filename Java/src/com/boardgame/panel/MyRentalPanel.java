@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import com.boardgame.db.SQLCall;
 import com.boardgame.menubar.UserMenuBar;
+import com.boardgame.window.RentalReviewWindow;
 import com.boardgame.window.RentalStatusUpdateWindow;
 
 import oracle.jdbc.internal.OracleTypes;
@@ -89,9 +90,8 @@ public class MyRentalPanel extends JPanel {
 				new RentalStatusUpdateWindow(frame, userId, rental_detail_id);
 			}
 			if (status.equals("대여완료")) {
-				
+				new RentalReviewWindow(frame, userId, rental_detail_id);
 			}
-//			listMyRental.get(num)
 		});
 	}
 	

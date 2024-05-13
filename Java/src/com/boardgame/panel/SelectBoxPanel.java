@@ -38,5 +38,13 @@ public class SelectBoxPanel extends JPanel {
 			}
 		});
 	}
+	
+	public void setSltInit(int number) {
+		sltBox.setSelectedIndex(number);
+	}
+	
+	public String getStrSltItem() {
+		return (String) sltBox.getSelectedItem();
+	}
     
 }
