@@ -55,20 +55,20 @@ public class JoinPanel extends JPanel {
 	private void initialization() {
 		setLayout(null);
 		
-		labelId.setBounds(90, 50, 50, 15);
-        labelPwd.setBounds(90, 80, 50, 15);
-        labelName.setBounds(90, 110, 50, 15);
-        labelBirth.setBounds(90, 140, 50, 15);
-        labelPhone.setBounds(90, 170, 180, 15);
+		labelId.setBounds(90, 20, 50, 30);
+        labelPwd.setBounds(90, 60, 50, 30);
+        labelName.setBounds(90, 100, 50, 30);
+        labelBirth.setBounds(90, 140, 50, 30);
+        labelPhone.setBounds(90, 170, 180, 30);
         
-        txtID.setBounds(230, 50, 125, 15);
-        txtPwd.setBounds(230, 80, 125, 15);
-        txtName.setBounds(230, 110, 125, 15);
-        datePickerPanel.setBounds(230, 135, 125, 30);
-        txtPhone.setBounds(230, 170, 125, 15);
+        txtID.setBounds(230, 23, 125, 30);
+        txtPwd.setBounds(230, 63, 125, 30);
+        txtName.setBounds(230, 103, 125, 30);
+        datePickerPanel.setBounds(230, 143, 125, 30);
+        txtPhone.setBounds(230, 173, 125, 30);
         
-        btnJoin.setBounds(90, 200, 120, 30);
-        btnBack.setBounds(235, 200, 120, 30);
+        btnJoin.setBounds(90, 210, 125, 30);
+        btnBack.setBounds(230, 210, 125, 30);
         
         add(labelId);
         add(labelPwd);
