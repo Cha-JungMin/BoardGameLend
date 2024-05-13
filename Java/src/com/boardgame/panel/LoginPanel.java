@@ -45,12 +45,12 @@ public class LoginPanel extends JPanel {
 	private void initialization() {
 		setLayout(null);
 		
-        labelId.setBounds(130, 93, 50, 15);
-        labelPwd.setBounds(130, 123, 50, 15);
-        txtId.setBounds(190, 93, 125, 15);
-        txtPwd.setBounds(190, 123, 125, 15);
-        btnLogin.setBounds(130, 153, 80, 30);
-        btnJoin.setBounds(235, 153, 80, 30);
+        labelId.setBounds(130, 60, 50, 30);
+        labelPwd.setBounds(130, 100, 50, 30);
+        txtId.setBounds(190, 63, 125, 30);
+        txtPwd.setBounds(190, 103, 125, 30);
+        btnLogin.setBounds(130, 163, 80, 30);
+        btnJoin.setBounds(235, 163, 80, 30);
         
         txtId.setColumns(0);
         txtPwd.setColumns(0);
