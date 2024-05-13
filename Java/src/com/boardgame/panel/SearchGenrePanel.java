@@ -86,8 +86,8 @@ public class SearchGenrePanel extends JPanel {
 							resultSet.getInt(5) + " ~ " + resultSet.getInt(6),
 							resultSet.getInt(7)
 					});
-					dataGameList.forEach(item -> dataGameListCopy.add(Arrays.copyOfRange(item, 1, item.length)));
 				}
+				dataGameList.forEach(item -> dataGameListCopy.add(Arrays.copyOfRange(item, 1, item.length)));
 				tbGameList.setTableData(dataGameListCopy.stream().toArray(Object[][]::new));
 				tbGameList.getSltItem(sltNum -> {
 					new BoardGameDetailWindow(frame, userId, (int) dataGameList.get(sltNum)[0]);
