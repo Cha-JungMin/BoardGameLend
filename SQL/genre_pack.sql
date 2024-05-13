@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 금요일-5월-10-2024   
+--  파일이 생성됨 - 월요일-5월-13-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package GENRE_PACK
@@ -20,6 +20,10 @@ is
     procedure get_serch_genre_boardgame_info (
         p_board_genre_id 	in	number,
         p_result_cursor		out	sys_refcursor
+    );
+    procedure get_board_game_genres (
+        p_board_id 		in number,
+        p_result_cursor out sys_refcursor
     );
 end;
 
@@ -112,16 +116,37 @@ is
     is
     begin
         open p_result_cursor for
-            select bg.game_title,
+            select bg.board_id,
+                   bg.game_title,
                    bg.min_people,
                    bg.max_people,
                    bg.min_play_time,
                    bg.max_play_time,
                    bg.rental_fee
                 from board_game bg
-                join board_genre bgg on bg.board_id = bgg.board_game_board_id
-            where bgg.genre_genre_id = p_board_genre_id;
-    end;    
+                inner join board_genre bgg on bg.board_id = bgg.board_game_board_id
+            where bgg.genre_genre_id = p_board_genre_id
+            order by bg.game_title asc;
+    end;
+    
+    procedure get_board_game_genres (
+        p_board_id 		in number,
+        p_result_cursor out sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select g.genre
+            from genre g
+            join board_genre bg on g.genre_id = bg.genre_genre_id
+            where bg.board_game_board_id = p_board_id
+            order by g.genre asc;
+    
+        exception
+            when no_data_found then
+                null; -- 해당하는 장르를 찾을 수 없는 경우 커서를 NULL로 설정합니다.
+    end;
+    
 end;
 
 /

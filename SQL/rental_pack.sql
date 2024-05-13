@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 금요일-5월-10-2024   
+--  파일이 생성됨 - 월요일-5월-13-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package RENTAL_PACK
@@ -51,6 +51,30 @@ is
         p_start_date 			in 	varchar2,
         p_end_date 				in 	varchar2,
         p_result_cursor 		out sys_refcursor
+    );
+    
+    procedure get_rental_detail_id_info (
+        p_rental_detail_id		in 	number,
+        p_result_cursor 		out sys_refcursor
+    );
+    
+    
+    procedure update_rental_detail_statement (
+        p_rental_detail_id 	in 	number,
+        p_statement 		in 	varchar2,
+        p_success 			out number
+    );
+    
+    procedure update_rental_detail_review (
+        p_rental_detail_id 	in 	number,
+        p_grade		 		in 	number,
+        p_comment	 		in 	varchar2,
+        p_success 			out number
+    );
+    
+    procedure delete_rental_detail (
+        p_rental_detail_id 	in 	number,
+        p_success 			out number
     );
 end;
 
@@ -111,17 +135,22 @@ is
         v_start_date date;
         v_end_date date;
     begin
-
-        update rental_detail
-        set statement = '연체 -' || trunc(sysdate - to_date(end_date))
-        where (statement = '대여중' or statement like '연체%') 
-            and end_date < trunc(sysdate);
+       
+        
+        
+        update rental_detail rd
+        set rd.statement = '연체 -' || trunc(sysdate - to_date(rd.end_date)), 
+            rd.total_fee = (select bg.rental_fee from board_game bg where bg.board_id = rd.boardgame_board_id)  * (trunc(sysdate) - trunc(rd.start_date) + 1)
+        where (rd.statement = '대여중' or rd.statement like '연체%') 
+            and rd.end_date < trunc(sysdate);
         commit;
+    
         update rental_detail
         set statement = '대여중'
         where statement = '대여예정' and start_date >= trunc(sysdate);
         commit;
     end;
+
     
     procedure get_rental_statement (p_start_date in date, p_end_date in date,
                                     statement_cursor out sys_refcursor)
@@ -255,7 +284,7 @@ is
         from rental_detail ren
         left join member mem on mem.member_id = ren.member_member_id
         where (p_start_date <= start_date and end_date <= p_end_date)
-            and (p_username is null or lower(mem.name) like lower('%' || p_username || '%'))
+            and (p_username is null or mem.name like '%' || p_username || '%')
             and (p_title is null or game_title like '%' || p_title  || '%')
         order by rental_detail_id desc;
     end;
@@ -372,6 +401,94 @@ is
                     ) <= least(
                         to_date(p_end_date), rd.end_date
                         );
+    end;
+    
+    
+    procedure get_rental_detail_id_info (
+        p_rental_detail_id		in 	number,
+        p_result_cursor 		out sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select * from rental_detail rd where rd.rental_detail_id = p_rental_detail_id;
+    end;
+    
+    
+    procedure update_rental_detail_statement (
+        p_rental_detail_id 	in 	number,
+        p_statement 		in 	varchar2,
+        p_success 			out number
+    )
+    is
+    begin
+        -- 대여 정보의 statement를 업데이트합니다.
+        update rental_detail
+        set statement = p_statement
+        where rental_detail_id = p_rental_detail_id;
+        
+        -- 성공적으로 업데이트되었는지 확인합니다.
+        if sql%rowcount = 1 then
+            p_success := 1; -- 성공적으로 업데이트된 경우
+        else
+            p_success := 0; -- 업데이트에 실패한 경우
+        end if;
+        
+        commit; -- 트랜잭션을 완료합니다.
+    exception 
+        when others then
+            p_success := 0; -- 예외가 발생한 경우 실패로 처리합니다.
+            rollback; -- 롤백하여 변경사항을 취소합니다.
+    end;
+    
+    procedure update_rental_detail_review (
+        p_rental_detail_id 	in 	number,
+        p_grade		 		in 	number,
+        p_comment	 		in 	varchar2,
+        p_success 			out number
+    )
+    is
+    begin
+        
+        update rental_detail
+        set grade = p_grade, rental_comment  = p_comment
+        where rental_detail_id = p_rental_detail_id;
+        
+        -- 성공적으로 업데이트되었는지 확인합니다.
+        if sql%rowcount = 1 then
+            p_success := 1; -- 성공적으로 업데이트된 경우
+        else
+            p_success := 0; -- 업데이트에 실패한 경우
+        end if;
+        
+        commit; -- 트랜잭션을 완료합니다.
+    exception
+        when others then
+            p_success := 0; -- 예외가 발생한 경우 실패로 처리합니다.
+            rollback; -- 롤백하여 변경사항을 취소합니다.
+    end;
+    
+    procedure delete_rental_detail (
+        p_rental_detail_id 	in 	number,
+        p_success 			out number
+    )
+    is
+    begin
+    
+        delete from rental_detail
+        where rental_detail_id = p_rental_detail_id;
+        
+        if sql%rowcount = 1 then
+            p_success := 1;
+        else
+            p_success := 0;
+        end if;
+        
+        commit;
+    exception
+        when others then
+            p_success := 0;
+            rollback;
     end;
 end;
 
