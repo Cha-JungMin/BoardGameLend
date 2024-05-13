@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  파일이 생성됨 - 금요일-5월-10-2024   
+--  파일이 생성됨 - 월요일-5월-13-2024   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Package BOARD_PACK
@@ -25,6 +25,11 @@ is
     procedure get_filter_rental_fee_info (
         p_rental_fee		in number,
         p_result_cursor		out sys_refcursor
+    );
+    
+    procedure get_boardgame_info (
+        p_board_game_id 	in 	number,
+        p_result_cursor 	out sys_refcursor
     );
 end;
 
@@ -177,14 +182,26 @@ is
     is
     begin
         open p_result_cursor for
-            select bg.game_title,
+            select bg.board_id,
+                   bg.game_title,
                    bg.min_people,
                    bg.max_people,
                    bg.min_play_time,
                    bg.max_play_time,
                    bg.rental_fee
             from board_game bg
-            where bg.rental_fee <= p_rental_fee;
+            where bg.rental_fee <= p_rental_fee
+            order by bg.rental_fee desc;
+    end;
+    
+    procedure get_boardgame_info (
+        p_board_game_id 	in 	number,
+        p_result_cursor 	out sys_refcursor
+    )
+    is
+    begin
+        open p_result_cursor for
+            select * from board_game where board_id = p_board_game_id;
     end;
 end;
 
