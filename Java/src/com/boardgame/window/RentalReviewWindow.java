@@ -5,15 +5,15 @@ import java.awt.Container;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import com.boardgame.panel.RentalStatusUpdatePanel;
+import com.boardgame.panel.RentalReviewPanel;
 
-public class RentalStatusUpdateWindow extends JDialog implements Window {
+public class RentalReviewWindow extends JDialog implements Window {
 
 	private Container container = getContentPane();
 	private int userId = 0;
 	private int rentalDetailId = 0;
 
-	public RentalStatusUpdateWindow(JFrame frame, int user_id, int rentalDetailId) {
+	public RentalReviewWindow(JFrame frame, int user_id, int rentalDetailId) {
 		super(frame, "BoardGameRental", true);
 		this.userId = user_id;
 		this.rentalDetailId = rentalDetailId;
@@ -22,9 +22,9 @@ public class RentalStatusUpdateWindow extends JDialog implements Window {
 	
 	@Override
 	public void initialization() {
-        setSize(400, 300);
+        setSize(400, 500);
         setLocationRelativeTo(null);
-        container.add(new RentalStatusUpdatePanel(this, this.userId, this.rentalDetailId));
+        container.add(new RentalReviewPanel(this, this.userId, this.rentalDetailId));
         setVisible(true);
 	}
 	
