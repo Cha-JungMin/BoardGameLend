@@ -71,9 +71,7 @@ public class RentalStatus extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+
 	public RentalStatus() {
 		setTitle("대여 현황 관리");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -145,8 +143,6 @@ public class RentalStatus extends JFrame {
 		table.getColumnModel().getColumn(8).setMaxWidth(50);
 		table.getColumnModel().getColumn(9).setMaxWidth(75);
 		scrollPane.setViewportView(table);
-//		table.setBounds(25, 165, 642, 418);
-//		contentPane.add(table);
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mouseClicked(MouseEvent e) {

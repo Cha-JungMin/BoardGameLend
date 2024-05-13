@@ -21,6 +21,7 @@ public class AddBoardGame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private static BoardStatus board;
 	/**
 	 * Launch the application.
 	 */
@@ -28,7 +29,7 @@ public class AddBoardGame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddBoardGame frame = new AddBoardGame();
+					AddBoardGame frame = new AddBoardGame(board);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,7 +41,7 @@ public class AddBoardGame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AddBoardGame() {
+	public AddBoardGame(BoardStatus board) {
 		setTitle("보드게임 추가");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 627, 791);
@@ -194,6 +195,8 @@ public class AddBoardGame extends JFrame {
 	    		com.boardgame.db.BoardPack.createBoardGame(title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
 	    		JOptionPane.showMessageDialog(null, "보드게임을 추가하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
+	    		dispose();
+	    		board.refresh();
 			}
 		});
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 26));

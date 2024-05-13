@@ -110,7 +110,6 @@ public class BoardStatus extends JPanel {
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                // 선택된 행의 인덱스를 가져옴
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) { 
                     
@@ -136,6 +135,8 @@ public class BoardStatus extends JPanel {
         for (int i = 5; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
         
         JButton btnNewButton_1 = new JButton("보드게임 추가");
         btnNewButton_1.setBounds(1007, 87, 109, 36);
@@ -145,9 +146,9 @@ public class BoardStatus extends JPanel {
         btnNewButton_2.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		JFrame frame = new SelectGenre(board_id, selectName);
-        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 닫기 버튼을 누르면 프레임이 닫히도록 설정
+        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
         		frame.setLocationRelativeTo(null);
-                frame.setVisible(true); // 프레임을 보이게 함
+                frame.setVisible(true); 
         	}
         });
         btnNewButton_2.setBounds(1007, 139, 109, 36);
@@ -187,9 +188,7 @@ public class BoardStatus extends JPanel {
         		JFrame frame = new UpdateBoardGame (board_id, selectName, genre, description,
         	    copy, min_people, max_people, min_playtime, max_playtime, rental_fee, BoardStatus.this);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-//                frame.setSize(400, 300); // 프레임의 크기 설정
         		frame.setLocationRelativeTo(null);
-                frame.setTitle("보드게임 추가");
                 frame.setVisible(true); 
         	}
         });
@@ -208,9 +207,9 @@ public class BoardStatus extends JPanel {
                 	com.boardgame.db.BoardPack.deleteBoardGame(board_id);
                 	JOptionPane.showMessageDialog(null, selectName + "을(를) 삭제하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
                 	selectName = null;
+                	refresh();
                 } 
                 
-        		refresh();
         	}
         });
         btnNewButton_1_1_1.setBounds(1007, 228, 109, 36);
@@ -233,9 +232,8 @@ public class BoardStatus extends JPanel {
         btnNewButton_1.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new AddBoardGame();
+        		JFrame frame = new AddBoardGame(BoardStatus.this);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-//                frame.setSize(400, 300); // 프레임의 크기 설정
         		frame.setLocationRelativeTo(null);
                 frame.setTitle("보드게임 추가");
                 frame.setVisible(true); 

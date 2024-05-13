@@ -29,9 +29,8 @@ public class UpdateGenre extends JFrame {
 	static int board_id;
 	UpdateBoardGame updateBoardGame;
 	String selectedGenre;
-	/**
-	 * Launch the application.
-	 */
+
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -106,7 +105,6 @@ public class UpdateGenre extends JFrame {
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
-//		textArea.setText("검색");
 		textArea.setBounds(12, 48, 198, 33);
 		contentPane.add(textArea);
 

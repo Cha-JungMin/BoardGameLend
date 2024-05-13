@@ -34,9 +34,8 @@ public class RentalStatistic extends JFrame {
 	public static DatePicker startDate;
 	public static DatePicker endDate;
 	private boolean isAsc = false;
-	/**
-	 * Launch the application.
-	 */
+
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -50,9 +49,7 @@ public class RentalStatistic extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+
 	public RentalStatistic() {
 		
 		setTitle("게임별 통계");

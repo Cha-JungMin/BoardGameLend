@@ -29,9 +29,8 @@ public class SelectGenre extends JFrame {
 	static int board_id;
 	UpdateBoardGame updateBoardGame;
 	String selectedGenre;
-	/**
-	 * Launch the application.
-	 */
+
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -55,9 +54,8 @@ public class SelectGenre extends JFrame {
 		this(board_id, name);
 		this.updateBoardGame = updateBoardGame;
 	}
-	/**
-	 * Create the frame.
-	 */
+
+	
 	public SelectGenre(int board_id, String name) {
 		SelectGenre.selectedName = name;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
