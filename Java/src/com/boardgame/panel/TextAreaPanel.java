@@ -25,12 +25,18 @@ public class TextAreaPanel extends JScrollPane {
         setViewportView(txtArea);
 	}
 	
+	
 	public void setText(String str) {
 		txtArea.setText(str);
 	}
 	
 	public String getText() {
 		return txtArea.getText();
+	}
+	
+	public void notEdit() {
+		txtArea.setEditable(false); // 사용자 입력 금지
+		txtArea.setLineWrap(true); // 줄 바꿈 활성화
 	}
 	
 }
