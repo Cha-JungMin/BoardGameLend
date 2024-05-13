@@ -4,10 +4,12 @@ import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,51 +18,62 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+import javax.swing.JScrollPane;
 
 
 public class BoardStatus extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private JTable table;
-    private JTextArea textArea_5, pageNumber;
-    static Connection con;
+    private JTextArea textArea_5;
+    private boolean isAsc = false;
     int board_id;
     String selectName, description, genre;
     int copy, min_people, max_people, min_playtime, max_playtime, rental_fee;
-    private int currentPage = 1;
-    private int pageSize = 11;
-    private int totalPage = 1;
     
-    
-    public BoardStatus() {
+
+	public BoardStatus() {
     	setBackground(SystemColor.menu);
         setLayout(null);
         
+        textArea_5 = new JTextArea();
+        textArea_5.setText("총 0개의 결과");
+        textArea_5.setEditable(false);
+        textArea_5.setBackground(SystemColor.menu);
+        textArea_5.setBounds(502, 414, 114, 29);
+        add(textArea_5);
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(26, 61, 969, 327);
+        add(scrollPane);
+        
         
         table = new JTable();
+        scrollPane.setViewportView(table);
         table.setFillsViewportHeight(true);
         table.setModel(new DefaultTableModel(
         	new Object[][] {
         		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
-        		{null, null, null, null, null, null, null, null, null, null},
         	},
         	new String[] {
-        		"New column", "board_title", "description", "copy", "genre", "min_people", "max_people", "min_play_time", "max_play_time", "rental_fee"
+        		"New column", "\uAC8C\uC784 \uC774\uB984", "\uAC8C\uC784 \uC124\uBA85", "\uAC1C\uC218", "\uD3EC\uD568 \uC7A5\uB974", "\uCD5C\uC18C \uC778\uC6D0", "\uCD5C\uB300 \uC778\uC6D0", "\uCD5C\uC18C \uD50C\uB808\uC774 \uC2DC\uAC04", "\uCD5C\uB300 \uD50C\uB808\uC774 \uC2DC\uAC04", "\uB300\uC5EC\uB8CC"
         	}
-        ));
+        ) {
+			Class[] columnTypes = new Class[] {
+        		Object.class, Object.class, Object.class, Integer.class, Object.class, Integer.class, Integer.class, Integer.class, Integer.class, Integer.class
+        	};
+        	public Class getColumnClass(int columnIndex) {
+        		return columnTypes[columnIndex];
+        	}
+        });
         table.getColumnModel().getColumn(0).setPreferredWidth(1);
         table.getColumnModel().getColumn(0).setMinWidth(0);
         table.getColumnModel().getColumn(0).setMaxWidth(1);
@@ -74,199 +87,29 @@ public class BoardStatus extends JPanel {
         table.getColumnModel().getColumn(8).setPreferredWidth(60);
         table.getColumnModel().getColumn(9).setPreferredWidth(95);
         table.setCellSelectionEnabled(true);
-        table.setBounds(26, 89, 639, 275);
         table.setRowHeight(25);
-        add(table);
-        
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        for (int i = 5; i < table.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-        
-        JButton btnNewButton_1 = new JButton("보드게임 추가");
-        btnNewButton_1.setBounds(677, 95, 109, 36);
-        add(btnNewButton_1);
-
-        JButton btnNewButton_2 = new JButton("장르 추가");
-        btnNewButton_2.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new SelectGenre(con, board_id, selectName);
-        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 닫기 버튼을 누르면 프레임이 닫히도록 설정
-        		frame.setLocationRelativeTo(null);
-                frame.setVisible(true); // 프레임을 보이게 함
-        	}
-        });
-        btnNewButton_2.setBounds(677, 147, 109, 36);
-        add(btnNewButton_2);
-        
-        JButton btnNewButton_2_1 = new JButton("돌아가기");
-        btnNewButton_2_1.setBounds(677, 328, 109, 36);
-        add(btnNewButton_2_1);
-        
-        JTextArea textArea = new JTextArea();
-        textArea.setText("이름");
-        textArea.setEditable(false);
-        textArea.setBackground(SystemColor.menu);
-        textArea.setBounds(26, 61, 68, 29);
-        add(textArea);
-        
-        JTextArea textArea_1 = new JTextArea();
-        textArea_1.setText("설명");
-        textArea_1.setEditable(false);
-        textArea_1.setBackground(SystemColor.menu);
-        textArea_1.setBounds(94, 61, 152, 29);
-        add(textArea_1);
-        
-        JTextArea textArea_2 = new JTextArea();
-        textArea_2.setText("개수");
-        textArea_2.setEditable(false);
-        textArea_2.setBackground(SystemColor.menu);
-        textArea_2.setBounds(253, 61, 52, 29);
-        add(textArea_2);
-        
-        JTextArea textArea_3 = new JTextArea();
-        textArea_3.setText("장르");
-        textArea_3.setBackground(SystemColor.menu);
-        textArea_3.setBounds(306, 61, 68, 29);
-        add(textArea_3);
-        
-        JTextArea textArea_4 = new JTextArea();
-        textArea_4.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        textArea_4.setText("최소/최대 인원");
-        textArea_4.setBackground(SystemColor.menu);
-        textArea_4.setBounds(405, 62, 92, 29);
-        add(textArea_4);
-        
-        JTextArea textArea_6 = new JTextArea();
-        textArea_6.setFont(new Font("Monospaced", Font.PLAIN, 10));
-        textArea_6.setText("최소/최대 플레이 시간");
-        textArea_6.setEditable(false);
-        textArea_6.setBackground(SystemColor.menu);
-        textArea_6.setBounds(497, 64, 114, 29);
-        add(textArea_6);
-        
-        JTextArea textArea_6_2 = new JTextArea();
-        textArea_6_2.setText("대여료(일)");
-        textArea_6_2.setBackground(SystemColor.menu);
-        textArea_6_2.setBounds(611, 61, 68, 29);
-        add(textArea_6_2);
-        
-        JButton btnNewButton_2_2 = new JButton("새로고침");
-        btnNewButton_2_2.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		currentPage = 1;
-        		pageNumber.setText(Integer.toString(currentPage));
-        		refresh();
-        	}
-        });
-        btnNewButton_2_2.setBounds(677, 282, 109, 36);
-        add(btnNewButton_2_2);
-        
-        pageNumber = new JTextArea();
-        pageNumber.setText("1");
-        pageNumber.setEditable(false);
-        pageNumber.setBackground(SystemColor.menu);
-        pageNumber.setBounds(264, 398, 37, 28);
-        add(pageNumber);
-        
-        JButton btnNewButton_1_1 = new JButton("게임 정보 수정");
-        btnNewButton_1_1.setFont(new Font("굴림", Font.PLAIN, 11));
-        btnNewButton_1_1.addActionListener(new ActionListener() {
-        	@Override
-        	public void actionPerformed(ActionEvent e) {
-        		if (selectName == null) {
-        			JOptionPane.showMessageDialog(null, "먼저 게임을 선택해 주세요", "오류", JOptionPane.ERROR_MESSAGE);
-        			return;
-        		}
-        		JFrame frame = new UpdateBoardGame (con, board_id, selectName, genre, description,
-        	    copy, min_people, max_people, min_playtime, max_playtime, rental_fee, BoardStatus.this);
-        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-//                frame.setSize(400, 300); // 프레임의 크기 설정
-        		frame.setLocationRelativeTo(null);
-                frame.setTitle("보드게임 추가");
-                frame.setVisible(true); 
-        	}
-        });
-        btnNewButton_1_1.setBounds(677, 193, 109, 36);
-        add(btnNewButton_1_1);
-        
-        JButton btnNewButton_1_1_1 = new JButton("보드게임 삭제");
-        btnNewButton_1_1_1.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if (selectName == null) {
-        			JOptionPane.showMessageDialog(null, "먼저 게임을 선택해 주세요", "오류", JOptionPane.ERROR_MESSAGE);
-        			return;
-        		}
-        		int result = JOptionPane.showConfirmDialog(null, selectName + "을(를) 삭제하시겠습니까?", "게임 삭제", JOptionPane.YES_NO_OPTION);
-        		if (result == JOptionPane.YES_OPTION) {
-                	com.boardgame.db.BoardPack.deleteBoardGame(con, board_id);
-                	JOptionPane.showMessageDialog(null, selectName + "을(를) 삭제하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
-                	selectName = null;
-                } 
-                
-        		refresh();
-        	}
-        });
-        btnNewButton_1_1_1.setBounds(677, 236, 109, 36);
-        add(btnNewButton_1_1_1);
-        
-        textArea_5 = new JTextArea();
-        textArea_5.setText("전체 페이지:");
-        textArea_5.setEditable(false);
-        textArea_5.setVisible(false);
-        textArea_5.setBackground(SystemColor.menu);
-        textArea_5.setBounds(405, 398, 96, 29);
-        add(textArea_5);
-
-        JButton btnNewButton = new JButton("▶");
-        btnNewButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		
-                if (currentPage < totalPage) {
-                    currentPage++;
-                    pageNumber.setText(Integer.toString(currentPage));
-                    refresh();
-                }
-        	}
-        });
-        btnNewButton.setBounds(317, 399, 58, 23);
-        add(btnNewButton);
-        
-        JButton btnNewButton_3 = new JButton("◀");
-        btnNewButton_3.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		 if (currentPage > 1) {
-                     currentPage--;
-                     pageNumber.setText(Integer.toString(currentPage));
-                     refresh();
-                 }
-        	}
-        });
-        btnNewButton_3.setBounds(171, 399, 58, 23);
-        add(btnNewButton_3);
-        
-        JButton btnSearchFilter = new JButton("조회 필터");
-        btnSearchFilter.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new SearchFilter (con, BoardStatus.this);
-                		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-                		frame.setLocationRelativeTo(null); // 위치 
-                        frame.setVisible(true); 		
-        	}
-        });
-        btnSearchFilter.setFont(new Font("굴림", Font.PLAIN, 16));
-        btnSearchFilter.setBounds(26, 15, 109, 36);
-        add(btnSearchFilter);
-        
-       
-        
+ 
+		table.getTableHeader().addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int col = table.columnAtPoint(e.getPoint());
+		        DefaultTableModel model = (DefaultTableModel) table.getModel();
+		        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+		        table.setRowSorter(sorter);
+		        
+		        if (isAsc == false)  {
+		        	isAsc = true;
+		        	sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(col, SortOrder.ASCENDING)));
+		        } else {
+		        	isAsc = false;
+		        	sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(col, SortOrder.DESCENDING)));
+		        }
+		    }
+		});
         
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                // 선택된 행의 인덱스를 가져옴
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) { 
                     
@@ -287,12 +130,110 @@ public class BoardStatus extends JPanel {
             
         });
         
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 5; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        
+        JButton btnNewButton_1 = new JButton("보드게임 추가");
+        btnNewButton_1.setBounds(1007, 87, 109, 36);
+        add(btnNewButton_1);
+
+        JButton btnNewButton_2 = new JButton("장르 추가");
+        btnNewButton_2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JFrame frame = new SelectGenre(board_id, selectName);
+        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        		frame.setLocationRelativeTo(null);
+                frame.setVisible(true); 
+        	}
+        });
+        btnNewButton_2.setBounds(1007, 139, 109, 36);
+        add(btnNewButton_2);
+        
+        JButton btnNewButton_2_1 = new JButton("대여현황");
+        btnNewButton_2_1.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JFrame frame = new RentalStatus();
+        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        		frame.setLocationRelativeTo(null);
+                frame.setVisible(true); 
+        	}
+        });
+        btnNewButton_2_1.setFont(new Font("굴림", Font.PLAIN, 25));
+        btnNewButton_2_1.setBounds(650, 392, 136, 63);
+        add(btnNewButton_2_1);
+        
+        JButton btnNewButton_2_2 = new JButton("새로고침");
+        btnNewButton_2_2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		refresh();
+        	}
+        });
+        btnNewButton_2_2.setBounds(1007, 274, 109, 36);
+        add(btnNewButton_2_2);
+        
+        JButton btnNewButton_1_1 = new JButton("게임 정보 수정");
+        btnNewButton_1_1.setFont(new Font("굴림", Font.PLAIN, 11));
+        btnNewButton_1_1.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		if (selectName == null) {
+        			JOptionPane.showMessageDialog(null, "먼저 게임을 선택해 주세요", "오류", JOptionPane.ERROR_MESSAGE);
+        			return;
+        		}
+        		JFrame frame = new UpdateBoardGame (board_id, selectName, genre, description,
+        	    copy, min_people, max_people, min_playtime, max_playtime, rental_fee, BoardStatus.this);
+        		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        		frame.setLocationRelativeTo(null);
+                frame.setVisible(true); 
+        	}
+        });
+        btnNewButton_1_1.setBounds(1007, 185, 109, 36);
+        add(btnNewButton_1_1);
+        
+        JButton btnNewButton_1_1_1 = new JButton("보드게임 삭제");
+        btnNewButton_1_1_1.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (selectName == null) {
+        			JOptionPane.showMessageDialog(null, "먼저 게임을 선택해 주세요", "오류", JOptionPane.ERROR_MESSAGE);
+        			return;
+        		}
+        		int result = JOptionPane.showConfirmDialog(null, selectName + "을(를) 삭제하시겠습니까?", "게임 삭제", JOptionPane.YES_NO_OPTION);
+        		if (result == JOptionPane.YES_OPTION) {
+                	com.boardgame.db.BoardPack.deleteBoardGame(board_id);
+                	JOptionPane.showMessageDialog(null, selectName + "을(를) 삭제하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
+                	selectName = null;
+                	refresh();
+                } 
+                
+        	}
+        });
+        btnNewButton_1_1_1.setBounds(1007, 228, 109, 36);
+        add(btnNewButton_1_1_1);
+
+        
+        JButton btnSearchFilter = new JButton("조회 필터");
+        btnSearchFilter.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		JFrame frame = new SearchFilter (BoardStatus.this);
+                		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+                		frame.setLocationRelativeTo(null); // 위치 
+                        frame.setVisible(true); 		
+        	}
+        });
+        btnSearchFilter.setFont(new Font("굴림", Font.PLAIN, 16));
+        btnSearchFilter.setBounds(26, 15, 109, 36);
+        add(btnSearchFilter);
+        
         btnNewButton_1.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new AddBoardGame(con);
+        		JFrame frame = new AddBoardGame(BoardStatus.this);
         		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-//                frame.setSize(400, 300); // 프레임의 크기 설정
         		frame.setLocationRelativeTo(null);
                 frame.setTitle("보드게임 추가");
                 frame.setVisible(true); 
@@ -300,44 +241,41 @@ public class BoardStatus extends JPanel {
         });
     }
     
-    public void loadBoardGame(ResultSet resultData) {
-    	for (int row = 0; row < table.getRowCount(); row++) {
-            for (int col = 0; col < table.getColumnCount(); col++) {
-                table.setValueAt(null, row, col);
-            }
-    	}
-    	
-    	 int startRow = (currentPage - 1) * pageSize;
-         int endRow = currentPage * pageSize -1;
-    	
+    public void loadBoardGame(ResultSet resultSet) {
+    	DefaultTableModel model = (DefaultTableModel) table.getModel();
+    	model.setRowCount(0);
     	
     	try {
-    		int columnCount = resultData.getMetaData().getColumnCount();
-			int row = 0;
-    		while (resultData.next()) {
-    			if (startRow <= row && row <= endRow) { 				
-    				for (int i = 1; i <= columnCount; i++) {
-//                	rowData[i-1] = result.getObject(i);
-    					table.setValueAt(resultData.getObject(i), row - startRow, i-1);		
-    				}
-    			}
-                row++; 
+			int colCount = table.getColumnCount();
+			int cnt = 0;
+			while (resultSet.next()) {
+				Object[] row = new Object[colCount];
+				for (int i = 1; i <= colCount; i++) {
+		            row[i-1] = resultSet.getObject(i); 
+				}	
+				
+				model.addRow(row);
+				cnt++;
 			}
-    		
-    		totalPage = row / table.getColumnCount() + 1;
-    		this.textArea_5.setText("전체 페이지: " + totalPage);
-    		textArea_5.setVisible(true);
+
+			textArea_5.setText("총 " + cnt +"개의 결과");
 		} catch (SQLException e) {
-			System.out.print("SQL 예외: ");
-			e.printStackTrace();
-		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	
-    
-    }
+	}
+
     public void refresh() {
-    	ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement(con);
-    	loadBoardGame(result);
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					ResultSet result = com.boardgame.db.BoardPack.getBoardGameStatement();
+					loadBoardGame(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
     }
 }

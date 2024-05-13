@@ -4,14 +4,14 @@ import java.awt.Container;
 
 import javax.swing.JFrame;
 
-import com.boardgame.panel.RentalPanel;
+import com.boardgame.panel.SearchGenrePanel;
 
-public class RentalWindow extends JFrame implements Window {
+public class SearchGenreWindow extends JFrame implements Window {
 
 	private Container container = getContentPane();
 	private int userId = 0;
 
-	public RentalWindow(int user_id) {
+	public SearchGenreWindow(int user_id) {
 		this.userId = user_id;
 		initialization();
 	}
@@ -24,10 +24,9 @@ public class RentalWindow extends JFrame implements Window {
         setSize(800, 600);
         setLocationRelativeTo(null);
         
-        container.add(new RentalPanel(RentalWindow.this, this.userId));
+        container.add(new SearchGenrePanel(SearchGenreWindow.this, this.userId));
         
         setVisible(true);
 	}
 	
-
 }

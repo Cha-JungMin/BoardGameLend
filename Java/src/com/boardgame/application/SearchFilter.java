@@ -3,7 +3,6 @@ package com.boardgame.application;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.sql.Connection;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
@@ -13,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -21,16 +19,14 @@ public class SearchFilter extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private static Connection con;
 	static BoardStatus board;
-	/**
-	 * Launch the application.
-	 */
+
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SearchFilter frame = new SearchFilter(con, board);
+					SearchFilter frame = new SearchFilter(board);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -39,11 +35,8 @@ public class SearchFilter extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public SearchFilter(Connection con, BoardStatus board) {
-		this.con = con;
+
+	public SearchFilter(BoardStatus board) {
 		setTitle("검색 필터");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 551, 560);
@@ -184,7 +177,7 @@ public class SearchFilter extends JFrame {
 			        	return;
 			        }
 
-				ResultSet result = com.boardgame.db.BoardPack.SearchBoardGame(con, board_title,
+				ResultSet result = com.boardgame.db.BoardPack.SearchBoardGame(board_title,
 						genre, min_people, max_people, min_rental_fee, max_rental_fee);
 				board.loadBoardGame(result);
 			}

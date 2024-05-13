@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,7 +21,7 @@ public class AddBoardGame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	static Connection con;
+	private static BoardStatus board;
 	/**
 	 * Launch the application.
 	 */
@@ -30,7 +29,7 @@ public class AddBoardGame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddBoardGame frame = new AddBoardGame(con);
+					AddBoardGame frame = new AddBoardGame(board);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -42,8 +41,7 @@ public class AddBoardGame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AddBoardGame(Connection con) {
-		this.con = con;
+	public AddBoardGame(BoardStatus board) {
 		setTitle("보드게임 추가");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 627, 791);
@@ -194,9 +192,11 @@ public class AddBoardGame extends JFrame {
 	    		}
 	    		
 	    		
-	    		com.boardgame.db.BoardPack.createBoardGame(con, title, description, min_people, max_people,
+	    		com.boardgame.db.BoardPack.createBoardGame(title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
 	    		JOptionPane.showMessageDialog(null, "보드게임을 추가하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
+	    		dispose();
+	    		board.refresh();
 			}
 		});
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 26));

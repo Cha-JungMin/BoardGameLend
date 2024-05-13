@@ -4,14 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
@@ -19,13 +16,12 @@ import com.boardgame.db.SQLCall;
 import com.boardgame.menubar.UserMenuBar;
 import com.boardgame.window.Alert;
 import com.boardgame.window.LoginWindow;
-import com.boardgame.window.RentalWindow;
 
 import oracle.jdbc.internal.OracleTypes;
 
 public class UserEditPanel extends JPanel {
 	
-	private	RentalWindow	frame;
+	private	JFrame			frame;
 	private JMenuBar		menuBar;
 	private JLabel			labelId, labelPwd, labelNewPwd, labelName, labelBirth, labelPhone, labelJoinDate;
 	private JLabel			labelUserId, labelUserName, labelUserBirth, labelUserPhone, labelUserJoinDate;
@@ -33,7 +29,7 @@ public class UserEditPanel extends JPanel {
 	private JButton			btnUpdate, btnResig;
 	private int				userId;
 
-	public UserEditPanel(RentalWindow _frame, int user_id) {
+	public UserEditPanel(JFrame _frame, int user_id) {
 		frame = _frame;
 		userId = user_id;
 		menuBar = new UserMenuBar(frame, userId);
@@ -84,7 +80,6 @@ public class UserEditPanel extends JPanel {
 				"{ call pkg_member.get_member_info(?, ?) }",
 				cs -> {
 					try {
-						System.out.println(userId);
 						cs.setInt(1, userId);
 						cs.registerOutParameter(2, OracleTypes.CURSOR);
 						cs.execute();
@@ -105,7 +100,7 @@ public class UserEditPanel extends JPanel {
 				});
 	}
 	
-	private void setUserInfo(String userID, String userName, String userBirth, String userPhone, String userJoinDate) {
+	private void setUserInfo(String userID, String userName, String userPhone, String userBirth, String userJoinDate) {
 		labelUserId = new JLabel(userID);
 		labelUserName = new JLabel(userName);
 		labelUserBirth = new JLabel(userBirth);
@@ -113,11 +108,11 @@ public class UserEditPanel extends JPanel {
 		labelUserJoinDate = new JLabel(userJoinDate);
 		txtPwd = new JPasswordField();
 		txtNewPwd = new JPasswordField();
-		labelUserId.setBounds(110, 50, 50, 15);
+		labelUserId.setBounds(110, 50, 180, 15);
 		txtPwd.setBounds(130, 82, 100, 15);
 		txtNewPwd.setBounds(160, 112, 100, 15);
         labelUserName.setBounds(135, 140, 100, 15);
-        labelUserBirth.setBounds(130, 170, 100, 15);
+        labelUserBirth.setBounds(130, 170, 130, 15);
         labelUserPhone.setBounds(190, 200, 130, 15);
         labelUserJoinDate.setBounds(160, 230, 130, 15);
         add(labelUserId);

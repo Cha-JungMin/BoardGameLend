@@ -2,10 +2,6 @@ package com.boardgame.db;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import oracle.jdbc.internal.OracleTypes;
 
 public class SQLCall {
 	

@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,7 +20,6 @@ import javax.swing.text.StyledDocument;
 public class UpdateBoardGame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	static Connection con;
 	JTextPane textPane_2;
 	static BoardStatus board;
 	static String selectName, description, genre;
@@ -33,7 +31,7 @@ public class UpdateBoardGame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					UpdateBoardGame frame = new UpdateBoardGame(con, board_id, selectName, genre, description, copy,
+					UpdateBoardGame frame = new UpdateBoardGame(board_id, selectName, genre, description, copy,
 							min_people, max_people, min_playtime, max_playtime, rental_fee, board);
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -44,11 +42,8 @@ public class UpdateBoardGame extends JFrame {
 	}
 
 	
-	public UpdateBoardGame(Connection con, int board_id, String selectName, String genre, String description,
+	public UpdateBoardGame(int board_id, String selectName, String genre, String description,
     int copy, int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, BoardStatus board) {
-		this.board_id = board_id;
-		this.con = con;
-		this.board = board;
 		setTitle("보드게임 수정");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 627, 791);
@@ -212,10 +207,12 @@ public class UpdateBoardGame extends JFrame {
 	    			return ;
 	    		}
 	    		
-	    		com.boardgame.db.BoardPack.updateBoardGame(con, board_id, title, description, min_people, max_people,
+	    		com.boardgame.db.BoardPack.updateBoardGame(board_id, title, description, min_people, max_people,
 	    				min_playtime, max_playtime, rental_fee, copy);
 	    		JOptionPane.showMessageDialog(null, "보드게임을 수정하였습니다.", "성공", JOptionPane.PLAIN_MESSAGE);
+	    		dispose();
 	    		board.refresh();
+	    		
 			}
 		});
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 26));
@@ -232,10 +229,10 @@ public class UpdateBoardGame extends JFrame {
 		textPane_1_1.setBounds(43, 161, 114, 25);
 		contentPane.add(textPane_1_1);
 		
-		JButton btnNewButton_1 = new JButton("장르 추가");
+		JButton btnNewButton_1 = new JButton("장르 수정");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-        		JFrame frame = new SelectGenre(con, board_id, selectName, UpdateBoardGame.this);
+        		JFrame frame = new UpdateGenre(board_id, selectName, UpdateBoardGame.this);
                 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
                 		frame.setLocationRelativeTo(null);
                         frame.setVisible(true); 

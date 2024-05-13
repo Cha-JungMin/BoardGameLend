@@ -7,11 +7,13 @@ import java.sql.SQLException;
 import oracle.jdbc.internal.OracleTypes;
 
 public class BoardPack {
+	private static Connection con = DBConnection.getConnection();
 	
-    public static ResultSet getBoardGameStatement(Connection con) {
-        String procedure = "{ call board_pack.board_game_statement(?) }";
+    public static ResultSet getBoardGameStatement() {
+        
+    	String procedure = "{ call board_pack.board_game_statement(?) }";
         ResultSet resultSet = null;
-
+        
         try {
             CallableStatement callableStatement = con.prepareCall(procedure);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
@@ -25,7 +27,7 @@ public class BoardPack {
         return resultSet;
     }
     
-    public static void createBoardGame(Connection con, String title, String description, 
+    public static void createBoardGame(String title, String description, 
     		int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, int copy) {
     	
     	String procedure = "{ call board_pack.create_boardgame(?, ?, ?, ?, ?, ?, ?, ?)}";
@@ -47,7 +49,7 @@ public class BoardPack {
          }
     }
     
-    public static void updateBoardGame(Connection con, int board_id, String title, String description, 
+    public static void updateBoardGame(int board_id, String title, String description, 
     		int min_people, int max_people, int min_playtime, int max_playtime, int rental_fee, int copy) {
     	
     	String procedure = "{ call board_pack.update_boardgame(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
@@ -69,7 +71,7 @@ public class BoardPack {
          }
     }
     
-    public static void deleteBoardGame(Connection con, int board_id) {
+    public static void deleteBoardGame(int board_id) {
     	
     	String procedure = "{ call board_pack.delete_boardgame(?)}";
     	
@@ -83,7 +85,7 @@ public class BoardPack {
          }
     }
     
-    public static ResultSet SearchBoardGame(Connection con, String title, String genre, 
+    public static ResultSet SearchBoardGame(String title, String genre, 
     		int min_people, int max_people, int min_rental_fee, int max_rental_fee) {
     	ResultSet resultSet = null;
     	String procedure = "{ call board_pack.search_boardgames(?, ?, ?, ?, ?, ?, ?)}";
