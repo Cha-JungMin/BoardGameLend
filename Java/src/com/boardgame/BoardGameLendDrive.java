@@ -7,8 +7,8 @@ import com.boardgame.window.MyRentalWindow;
 public class BoardGameLendDrive {
 	
 	public static void main(String[] args) {
-//		LoginWindow window = new LoginWindow();
-		new MyRentalWindow(5);
+		LoginWindow window = new LoginWindow();
+//		new MyRentalWindow(5);
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {

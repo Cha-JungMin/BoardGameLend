@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -15,7 +14,6 @@ import javax.swing.SwingUtilities;
 
 import com.boardgame.db.SQLCall;
 import com.boardgame.window.Alert;
-import com.boardgame.window.MyRentalWindow;
 
 import oracle.jdbc.internal.OracleTypes;
 
@@ -31,7 +29,7 @@ public class RentalStatusUpdatePanel extends JPanel {
 	
 	private SelectBoxPanel sltRentalStatus;
 	
-	private String[] rentalStatusValue = {"대여중", "대여완료", "대여예정"};
+	private String[] rentalStatusValue = {"대여중", "대여완료", "대여예정", "대여취소"};
 	private Object[] list;
 	
 	public RentalStatusUpdatePanel(JDialog frame, int userId, int rentalDetailId) {
@@ -65,6 +63,10 @@ public class RentalStatusUpdatePanel extends JPanel {
 		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (sltRentalStatus.getStrSltItem().equals("대여취소")) {
+					removeStatement();
+					return;
+				}
 				updateStatement(sltRentalStatus.getStrSltItem());
 			}
 		});
@@ -139,4 +141,29 @@ public class RentalStatusUpdatePanel extends JPanel {
 				});
 	}
 	
+	private void removeStatement() {
+		new SQLCall(
+				"{ call rental_pack.delete_rental_detail(?, ?) }",
+				cs -> {
+					try {
+						cs.registerOutParameter(2, java.sql.Types.INTEGER);
+						cs.setInt(1, rentalDetailId);
+						cs.execute();
+						if (cs.getInt(2) == 1) {
+							new Alert("해당 보드게임의 대여 취소가 되었습니다.");
+							frame.dispose();
+							JFrame sFrame = (JFrame) SwingUtilities.getWindowAncestor(frame);
+							MyRentalPanel panel = new MyRentalPanel(sFrame, this.userId);
+							sFrame.getContentPane().removeAll();
+							sFrame.getContentPane().add(panel);
+							sFrame.revalidate();
+							sFrame.repaint();
+						}
+						if (cs.getInt(2) == 0) new Alert("해당 보드게임의 대여 취소를 못 했습니다.\n다시 시도해 주세요.");
+					} catch (SQLException err) {
+						System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
+						err.printStackTrace();
+					}
+				});
+	}
 }

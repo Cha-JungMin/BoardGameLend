@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +16,7 @@ import javax.swing.JTextField;
 
 import com.boardgame.db.SQLCall;
 import com.boardgame.menubar.UserMenuBar;
+import com.boardgame.window.BoardGameDetailWindow;
 
 import oracle.jdbc.internal.OracleTypes;
 
@@ -29,7 +31,7 @@ public class SearchRentalFeePanel extends JPanel {
 	private JTextField		txtRentalFee;
 	private JButton			btnSearch;
 	
-	private ArrayList<Object[]>		dataGameList;
+	private ArrayList<Object[]>		dataGameList, dataGameListCopy;
 
 	public SearchRentalFeePanel(JFrame _frame, int user_id) {
 		frame = _frame;
@@ -71,15 +73,21 @@ public class SearchRentalFeePanel extends JPanel {
 						cs.execute();
 						ResultSet resultSet = (ResultSet) cs.getObject(2);
 						dataGameList = new ArrayList<>();
+						dataGameListCopy = new ArrayList<>();
 						while (resultSet.next()) {
-							dataGameList.add(new Object[]{
-									resultSet.getString(1),
-									resultSet.getInt(2) + " ~ " + resultSet.getInt(3),
-									resultSet.getInt(4) + " ~ " + resultSet.getInt(5),
-									resultSet.getInt(6)
+							dataGameList.add(new Object[] {
+									resultSet.getInt(1),
+									resultSet.getString(2),
+									resultSet.getInt(3) + " ~ " + resultSet.getInt(4),
+									resultSet.getInt(5) + " ~ " + resultSet.getInt(6),
+									resultSet.getInt(7)
 							});
+							dataGameList.forEach(item -> dataGameListCopy.add(Arrays.copyOfRange(item, 1, item.length)));
 						}
-						tbGameList.setTableData(dataGameList.stream().toArray(Object[][]::new));
+						tbGameList.setTableData(dataGameListCopy.stream().toArray(Object[][]::new));
+						tbGameList.getSltItem(sltNum -> {
+							new BoardGameDetailWindow(frame, userId, (int) dataGameList.get(sltNum)[0]);
+						});
 					} catch (SQLException err) {
 						System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
 						err.printStackTrace();

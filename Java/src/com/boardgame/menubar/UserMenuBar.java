@@ -8,11 +8,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import com.boardgame.panel.MyRentalPanel;
 import com.boardgame.panel.RentalPanel;
 import com.boardgame.panel.SearchGenrePanel;
 import com.boardgame.panel.SearchRentalFeePanel;
 import com.boardgame.panel.UserEditPanel;
 import com.boardgame.window.LoginWindow;
+import com.boardgame.window.MyRentalWindow;
 
 public class UserMenuBar extends JMenuBar {
 
@@ -20,7 +22,7 @@ public class UserMenuBar extends JMenuBar {
 	private JMenuBar		menuBar;
 	private JMenu			menuRental, menuSearch, menuInfo;
 	private JMenuItem		itemRentalBG, itemMyRental,
-							itemSearchBG, itemGenre, itemRentalFee,
+							itemGenre, itemRentalFee,
 							itemEdit, itemLogout;
 	private int				userId;
 	
@@ -34,7 +36,6 @@ public class UserMenuBar extends JMenuBar {
 		
 		itemRentalBG = new JMenuItem("BoardGame");
 		itemMyRental = new JMenuItem("My");
-		itemSearchBG = new JMenuItem("BoardGame");
 		itemGenre = new JMenuItem("Genre");
 		itemRentalFee = new JMenuItem("RentalFee");
 		itemEdit = new JMenuItem("Edit");
@@ -46,7 +47,6 @@ public class UserMenuBar extends JMenuBar {
 	private void initialization() {
 		menuRental.add(itemRentalBG);
 		menuRental.add(itemMyRental);
-		menuSearch.add(itemSearchBG);
 		menuSearch.add(itemGenre);
 		menuSearch.add(itemRentalFee);
 		menuInfo.add(itemEdit);
@@ -66,14 +66,11 @@ public class UserMenuBar extends JMenuBar {
 		itemMyRental.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		
-		itemSearchBG.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
+				MyRentalPanel panel = new MyRentalPanel(frame, userId);
+				frame.getContentPane().removeAll();
+				frame.getContentPane().add(panel);
+				frame.revalidate();
+				frame.repaint();
 			}
 		});
 		
