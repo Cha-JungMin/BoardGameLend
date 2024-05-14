@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -86,8 +87,10 @@ public class RentalPanel extends JPanel {
         btnRental.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				AtomicInteger tmp = new AtomicInteger(0);
+				int max = dataRentalCheckList.size() - 1;
 				dataRentalCheckList.forEach(v -> {
-					sendAddRental((int) v[0]);
+					sendAddRental((int) v[0], tmp.getAndIncrement(), max);
 				});
 			}
 		});
@@ -122,7 +125,7 @@ public class RentalPanel extends JPanel {
 				});
 	}
 	
-	private void sendAddRental(int copy_id) {
+	private void sendAddRental(int copy_id, int check, int max) {
 		new SQLCall(
 				"{ call rental_pack.add_rental_detail(?, ?, ?, ?, ?) }",
 				cs -> {
@@ -133,8 +136,10 @@ public class RentalPanel extends JPanel {
 						cs.setString(3, endPickerPanel.getDatafomat());
 						cs.setInt(4, userId);
 						cs.execute();
-						if (cs.getInt(5) == 1) new Alert("해당 보드게임이 대여가 되었습니다.");
-						if (cs.getInt(5) == 0) new Alert("해당 보드게임을 대여하지를 못 했습니다.\n 다시 시도해 주세요.");
+						if (check == max) {
+							if (cs.getInt(5) == 1) new Alert("해당 보드게임이 대여가 되었습니다.");
+							if (cs.getInt(5) == 0) new Alert("해당 보드게임을 대여하지를 못 했습니다.\n 다시 시도해 주세요.");
+						}
 						getIsRental();
 					} catch (SQLException err) {
 						System.err.format("SQL State: %s\n%s", err.getSQLState(), err.getMessage());
